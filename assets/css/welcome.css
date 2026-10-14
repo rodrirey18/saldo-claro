@@ -41,3 +41,18 @@
 .privacy-actions button{flex:1}
 @media(max-width:360px){.welcome-card{padding:20px 17px}.tour-bubble{padding:15px 14px}.tour-bubble h2{font-size:16px}}
 @media(min-width:700px){.welcome-screen{background:linear-gradient(135deg,#ebf6f4,#e5f0f6)}.tour-bubble{width:355px}}
+
+/* Rescate sin contraseña anterior: código de emergencia aleatorio */
+.recovery-info{text-align:center;padding:4px 0 12px}
+.recover-mark{display:grid;place-items:center;background:#d7f3f0;color:var(--teal);border-radius:17px;height:58px;width:58px;margin:0 auto 12px}
+.recovery-info h3{color:var(--navy);font-size:17px;margin:6px 0 8px}
+.recovery-info p{color:#5b7282;line-height:1.6;font-size:12px}
+.recovery-code{display:block;overflow-wrap:anywhere;word-break:break-word;background:#edf7f7;border:1px dashed #88c9ca;color:#073b49;padding:14px 10px;border-radius:13px;margin:15px 0;font-size:13px;font-weight:850;letter-spacing:.55px;line-height:1.8;user-select:all}
+.recovery-check{display:flex;align-items:flex-start;gap:10px;text-align:left;color:var(--navy);font-weight:740;font-size:12px;line-height:1.5;padding:14px 2px}
+.recovery-check input{accent-color:var(--teal);width:19px;height:19px;flex-shrink:0}
+
+/* Solo durante la guía: la pantalla que se está explicando permanece quieta.
+   La siguiente pantalla se enfoca al pulsar Siguiente; el cómic no cambia. */
+html.tour-frozen,html.tour-frozen body{overscroll-behavior:none}
+body.tour-active .app-shell{touch-action:none}
+.tour-layer{touch-action:none}

@@ -14,7 +14,7 @@ const monthLabel=m=>new Date(Number(m.slice(0,4)),Number(m.slice(5,7))-1,1).toLo
 const caps=s=>s.charAt(0).toUpperCase()+s.slice(1);
 const nameOf=a=>({digital:'Digital',cash:'Efectivo',savings:'Ahorros'})[a]||'Cuenta';
 const typeName=t=>({income:'Ingreso',expense:'Gasto',save:'Aporte a ahorro',withdraw:'Retiro de ahorro',transfer:'Transferencia'})[t]||'Movimiento';
-const blank=()=>({schema:2,profile:{name:'',currency:'PEN'},opening:{digital:0,cash:0,savings:0},categories:structuredClone(CATS),transactions:[],goals:[],budgets:{},recurring:[],strategies:[],demo:false});
+const blank=()=>({schema:2,profile:{name:'',currency:'PEN'},opening:{digital:0,cash:0,savings:0},categories:structuredClone(CATS),transactions:[],goals:[],budgets:{},recurring:[],strategies:[],skippedRecurring:[],demo:false});
 function load(){if(security.hasVault())return blank();try{const a=JSON.parse(localStorage.getItem(KEY));if(a?.schema!==2||!Array.isArray(a.transactions)||!Array.isArray(a.goals))return blank();const b=blank();return {...b,...a,profile:{...b.profile,...a.profile},opening:{...b.opening,...a.opening},categories:{...b.categories,...a.categories}}}catch{return blank()}}
 let db=load();let coachGoalId='';let coachSmallLimit=20;let page='home';let goalTab='goals';let month=thisMonth();let filter='all';let searchOpen=false;let searchText='';let showBalance=true;let focusReturn=null;
 const $=id=>document.getElementById(id);

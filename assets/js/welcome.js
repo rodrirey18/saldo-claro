@@ -6,17 +6,23 @@
 const WELCOME_TOUR = [
   {page:'home',selector:'.hero',title:'Tu dinero disponible',description:'Aquí ves cuánto puedes gastar. Suma tu dinero digital y efectivo, pero no incluye lo que guardaste en ahorros.'},
   {page:'home',selector:'.metric-grid',title:'Tu resumen del mes',description:'Estos cuadros muestran ingresos, gastos, ahorro del mes y cuántas metas tienes. Puedes cambiar el mes arriba.'},
-  {page:'home',selector:'.quick-row',title:'Registra lo que ocurre',description:'Cuando recibas dinero, pulsa “Añadir ingreso”. Cuando pagues algo, usa “Registrar gasto”. Nada se registra automáticamente.'},
+  {page:'home',selector:'.quick-row',title:'Registra lo que ocurre',description:'Añade tus gastos diarios aquí. Los sueldos y recibos fijos se pueden programar una sola vez.'},
   {page:'home',selector:'.wallet-row',title:'Digital y efectivo',description:'Lleva por separado tu dinero de Yape, banco y billetera. Las transferencias entre ambos no cuentan como gastos nuevos.'},
   {page:'movements',selector:'.filter-scroll',title:'Consulta tus movimientos',description:'Aquí puedes buscar, filtrar, editar y revisar cada ingreso, gasto, ahorro o transferencia.'},
   {page:'goals',selector:'.page-heading',title:'Ahorra para tus objetivos',description:'En Metas puedes crear una meta, indicar cuánto cuesta y registrar aportes o retiros cuando quieras.'},
   {page:'goals',selector:'.coach-intro',title:'Mejora tus hábitos',description:'Cada meta tiene un plan para reducir gastos hormiga, comparar productos caros y calcular posibles ahorros. Solo se registra dinero cuando realmente lo apartas.'},
-  {page:'goals',selector:'.goals-switch',title:'Planifica antes de gastar',description:'En “Plan mensual” tendrás presupuestos y pagos previstos. Solo los movimientos reales modifican el saldo.'},
-  {page:'settings',selector:'#privacy-panel',title:'Tus datos y privacidad',description:'Desde Ajustes puedes activar o cambiar tu contraseña, exportar un respaldo y volver a abrir esta guía.'}
+  {page:'goals',selector:'.goals-switch',title:'Planifica antes de gastar',description:'En Plan mensual calculas sueldo y gastos fijos. Puedes anotarlos al llegar su fecha, cuando abras la app. Revisa que sean correctos.'},
+  {page:'profile',selector:'#profile-form',title:'Tu perfil está aquí',description:'Pulsa el ícono de usuario de arriba para editar tu nombre y saldos iniciales cuando quieras.'},
+  {page:'settings',selector:'#privacy-panel',title:'Tus datos y ayuda',description:'Tus registros se guardan en este navegador. Desde Ajustes puedes hacer respaldos y repetir la guía.'}
 ];
 let currentStep = -1;
 let lastTourFocus = null;
 let lockBusy=false;
+let onRecoveryFinished=null;
+let tourAnchorScroll=0;
+const stopTourScroll=ev=>{if(currentStep>=0)ev.preventDefault();};
+window.addEventListener('wheel',stopTourScroll,{passive:false});
+window.addEventListener('touchmove',stopTourScroll,{passive:false});
 const welcomeScreen = document.getElementById('welcome-screen');
 const lockScreen = document.getElementById('lock-screen');
 const tourLayer = document.getElementById('tour-layer');
@@ -35,58 +41,29 @@ function openWelcome(){
     <div class="welcome-card">
       <div class="welcome-art">${ico('wallet',66)}</div><span class="welcome-pill">TU PRIMER DÍA</span>
       <h1>Organiza tu dinero a tu manera</h1>
-      <p class="welcome-intro">Registra ingresos, controla gastos y ahorra para lo que realmente quieres. Antes de empezar, personaliza tu espacio.</p>
-      <form id="welcome-form" novalidate>
+      <p class="welcome-intro">Registra tus ingresos, controla tus gastos y ahorra para tus metas. Personaliza tu espacio para comenzar.</p>
+      <form id="welcome-form">
         <label for="welcome-name">¿Cómo quieres que te llamemos? (opcional)</label>
         <input id="welcome-name" name="name" autocomplete="nickname" maxlength="55" placeholder="Ejemplo: Alex">
-        <div class="welcome-choice"><label><input type="checkbox" id="welcome-protect"> Proteger mis datos con contraseña</label><p>Puedes activarla ahora o después, desde Ajustes → Privacidad.</p></div>
-        <div id="welcome-password-fields" hidden>
-          <label for="welcome-pass">Crea una contraseña</label><input type="password" id="welcome-pass" autocomplete="new-password" minlength="8" placeholder="8 caracteres como mínimo">
-          <label for="welcome-confirm">Repite la contraseña</label><input type="password" id="welcome-confirm" autocomplete="new-password" placeholder="Confirmar contraseña">
-          <p class="field-hint">Se cifrarán tus registros solo en este dispositivo. Si olvidas la contraseña, no podrás recuperar los datos cifrados sin un respaldo previo.</p>
-        </div>
+        <p class="field-hint">Tu información se guarda solo en este navegador. No necesitas contraseña para probar la app.</p>
         <p class="welcome-error" role="alert" hidden></p>
         <button type="submit" class="welcome-primary">Comenzar y ver la guía →</button>
       </form>
-      <button type="button" class="welcome-secondary" id="welcome-skip">Entrar sin configurar nada</button>
+      <button type="button" class="welcome-secondary" id="welcome-skip">Entrar sin escribir mi nombre</button>
     </div>
-    <p class="welcome-help">Maqueta gratuita y sin cuentas online. Tu información permanece en este navegador; no se comparte con otros usuarios.</p>
+    <p class="welcome-help">Maqueta sin cuentas en línea. Evita guardar información sensible en navegadores compartidos.</p>
   </div>`;
-  const check=welcomeScreen.querySelector('#welcome-protect');
-  check.addEventListener('change',()=>welcomeScreen.querySelector('#welcome-password-fields').hidden=!check.checked);
-  welcomeScreen.querySelector('#welcome-form').addEventListener('submit',processWelcome);
-  welcomeScreen.querySelector('#welcome-skip').addEventListener('click',()=>completeWelcome('',null));
+  welcomeScreen.querySelector('#welcome-form').addEventListener('submit',ev=>{ev.preventDefault();completeWelcome(welcomeScreen.querySelector('#welcome-name').value.trim());});
+  welcomeScreen.querySelector('#welcome-skip').addEventListener('click',()=>completeWelcome(''));
 }
-async function processWelcome(event){
-  event.preventDefault();
-  const screen=welcomeScreen;
-  const name=screen.querySelector('#welcome-name').value.trim();
-  let password=null;
-  if(screen.querySelector('#welcome-protect').checked){
-    password=screen.querySelector('#welcome-pass').value;
-    const confirm=screen.querySelector('#welcome-confirm').value;
-    if(!security.available())return showError(screen,'Para activar una contraseña abre la aplicación desde Live Server o GitHub Pages (HTTPS).');
-    if(password.length<8)return showError(screen,'La contraseña debe tener 8 caracteres o más.');
-    if(password!==confirm)return showError(screen,'Las contraseñas no coinciden.');
-  }
-  await completeWelcome(name,password);
-}
-async function completeWelcome(name,password){
-  const button=welcomeScreen.querySelector('button[type=submit]');
-  if(button)button.disabled=true;
-  try{
-    db.profile.name=name;
-    if(password)await security.enable(password,db);
-    else if(!save())throw Error('No se pudieron guardar los datos.');
-    security.finishOnboarding();
-    welcomeScreen.hidden=true;
-    toggleShell(true);
-    page='home';
-    render();
-    window.scrollTo(0,0);
-    setTimeout(startTour,180);
-  }catch(err){showError(welcomeScreen,err.message||'No se pudo completar la configuración.');}
-  finally{if(button)button.disabled=false;}
+function completeWelcome(name){
+  db.profile.name=name;
+  if(!save())return showError(welcomeScreen,'No se pudieron guardar los datos.');
+  security.finishOnboarding();
+  welcomeScreen.hidden=true;
+  toggleShell(true);
+  page='home';render();window.scrollTo(0,0);
+  setTimeout(startTour,180);
 }
 
 function showLock(){
@@ -99,8 +76,10 @@ function showLock(){
       <h1>Bienvenido de vuelta</h1><p class="welcome-intro">Tus registros están cifrados en este navegador. Escribe tu contraseña para abrirlos.</p>
       <form id="unlock-form"><label for="unlock-password">Contraseña</label><input id="unlock-password" type="password" autocomplete="current-password" required placeholder="Tu contraseña">
       <p class="welcome-error" role="alert" hidden></p><button class="welcome-primary" type="submit">Desbloquear mi espacio →</button></form>
-      <p class="welcome-help">Si olvidaste tu contraseña, no existe recuperación automática. Solo podrás recuperar tus registros si conservas un respaldo exportado.</p><button type="button" id="lock-reset" class="welcome-secondary">Borrar este espacio y empezar de cero</button>
+      <button type="button" id="lock-recover" class="welcome-secondary">${security.hasRecovery()?'Olvidé mi contraseña · Usar código de recuperación':'¿Olvidaste la contraseña? Ver opciones'}</button>
+      <p class="welcome-help">${security.hasRecovery()?'El código que guardaste al crear la contraseña permite restablecerla.':'Esta cuenta se creó antes de incorporar códigos de recuperación. Necesitas la contraseña original o un respaldo previamente exportado.'}</p><button type="button" id="lock-reset" class="welcome-secondary">Borrar este espacio y empezar de cero</button>
     </div></div>`;
+  lockScreen.querySelector('#lock-recover').addEventListener('click',openForgotPassword);
   lockScreen.querySelector('#lock-reset').addEventListener('click',async()=>{
     const confirmation=prompt('Esto borrará permanentemente tus datos locales cifrados. Para confirmar escribe BORRAR:');
     if(confirmation!=='BORRAR')return;
@@ -113,10 +92,12 @@ function showLock(){
     try{
       const data=await security.unlock(lockScreen.querySelector('#unlock-password').value);
       db={...blank(),...data,profile:{...blank().profile,...data.profile},opening:{...blank().opening,...data.opening}};
+      await security.disable(db); // Se deja atrás la contraseña antigua, sin perder movimientos.
+      applyFixedSchedules();
       lockScreen.querySelector('#unlock-password').value='';
       lockScreen.hidden=true;
       toggleShell(true);page='home';month=thisMonth();render();
-      toast('Tu espacio está desbloqueado');
+      toast('Datos anteriores recuperados: ahora entras sin contraseña.');
     }catch{showError(lockScreen,'Contraseña incorrecta o datos protegidos dañados.');}
     finally{button.disabled=false;lockBusy=false;}
   });
@@ -125,49 +106,70 @@ async function lockNow(){
   try{await security.lock();db=blank();showLock();}catch{toast('No fue posible bloquear los datos.');}
 }
 
-function openPasswordSettings(){
-  const enabled=security.hasVault();
-  modal('Privacidad y contraseña',`<form id="password-form">
-    <p class="info-line">${enabled?'Para cambiar o quitar tu contraseña actual debes escribirla primero.':'La contraseña es opcional y cifra tus registros en este navegador, no en otros dispositivos.'}</p>
-    ${enabled?`<div class="form-group"><label for="privacy-current">Contraseña actual</label><input id="privacy-current" name="current" type="password" autocomplete="current-password" required minlength="8"></div><div class="form-group"><label for="privacy-operation">¿Qué quieres hacer?</label><select name="operation" id="privacy-operation"><option value="change">Cambiar contraseña</option><option value="remove">Quitar contraseña</option></select></div>`:'<input name="operation" type="hidden" value="add">'}
-    <div id="privacy-new-fields"><div class="form-group"><label for="privacy-new">Nueva contraseña (mínimo 8 caracteres)</label><input id="privacy-new" name="password" type="password" autocomplete="new-password" minlength="8"></div><div class="form-group"><label for="privacy-repeat">Confirma la contraseña</label><input id="privacy-repeat" name="repeat" type="password" autocomplete="new-password" minlength="8"></div></div>
-    <p class="info-line">Si olvidas la contraseña, no podremos recuperarla. Guarda respaldos con cuidado: se exportan sin cifrar.</p><p class="welcome-error" role="alert" hidden></p>
-    <div class="modal-buttons"><button type="button" class="secondary-btn" data-action="close-modal">Cancelar</button><button type="submit" class="primary-btn">Guardar</button></div>
-  </form>`);
-  const op=document.getElementById('privacy-operation');
-  if(op)op.addEventListener('change',()=>document.getElementById('privacy-new-fields').hidden=op.value==='remove');
-  document.getElementById('password-form').addEventListener('submit',savePasswordSettings);
+/** Muestra un código UNA SOLA VEZ. El código no se guarda en texto claro. */
+function showRecoveryCode(code,onFinish=null){
+  onRecoveryFinished=onFinish;
+  modal('Guarda tu código de recuperación',`<div class="recovery-info">
+    <div class="recover-mark">${ico('shield',32)}</div>
+    <h3>Esta es tu llave de emergencia</h3>
+    <p>Si olvidas tu contraseña, podrás usar este código para crear otra y abrir tus registros. <strong>Solo se muestra ahora.</strong></p>
+    <output id="recovery-code" class="recovery-code" aria-label="Código de recuperación">${esc(code)}</output>
+    <button type="button" id="recovery-copy" class="secondary-btn btn-full">${ico('download',16)} Copiar código</button>
+    <p class="field-hint">Guárdalo en un lugar privado fuera de este navegador. No lo compartas ni lo pongas en GitHub. Si pierdes tanto la contraseña como el código y no tienes un respaldo, los datos no se pueden recuperar.</p>
+    <label class="recovery-check"><input type="checkbox" id="recovery-ack"> Ya guardé mi código en un lugar seguro.</label>
+    <button type="button" class="primary-btn btn-full" id="recovery-done" disabled>Continuar</button>
+  </div>`);
+  $('modal-overlay').dataset.recovery='1';
+  $('recovery-ack').addEventListener('change',ev=>$('recovery-done').disabled=!ev.target.checked);
+  $('recovery-copy').addEventListener('click',async()=>{
+    try{await navigator.clipboard.writeText(code);toast('Código copiado. Guárdalo fuera de la app.');}
+    catch{toast('No se pudo copiar. Anota el código manualmente.');}
+  });
+  $('recovery-done').addEventListener('click',()=>{
+    if(!$('recovery-ack').checked)return;
+    delete $('modal-overlay').dataset.recovery;
+    closeModal();
+    const fn=onRecoveryFinished;onRecoveryFinished=null;
+    if(fn)setTimeout(fn,220);
+  });
 }
-async function savePasswordSettings(ev){
-  ev.preventDefault();
-  const f=ev.currentTarget, d=Object.fromEntries(new FormData(f));
-  const operation=d.operation;
-  const saveButton=f.querySelector('button[type=submit]');
-  saveButton.disabled=true;
-  try{
-    if(!security.available())throw Error('La contraseña requiere HTTPS o un servidor local.');
-    if(security.hasVault())await security.verify(d.current||'');
-    if(operation==='remove'){
-      if(!confirm('Al quitar la contraseña, los datos de este navegador se guardarán sin cifrar. ¿Continuar?'))return;
+function openForgotPassword(){
+  if(!security.hasRecovery()){
+    alert('Esta versión anterior no tiene código de recuperación. Usa tu contraseña original o recupera un respaldo JSON que hayas exportado. Si no tienes ninguno de los dos, no será posible descifrar los datos antiguos.');
+    return;
+  }
+  const card=lockScreen.querySelector('.welcome-card');
+  card.innerHTML=`<div class="welcome-art">${ico('shield',55)}</div><span class="welcome-pill">RECUPERAR ACCESO</span>
+    <h1>Crear una nueva contraseña</h1><p class="welcome-intro">Escribe el código que guardaste al proteger este dispositivo. No necesitas recordar tu contraseña anterior.</p>
+    <form id="forgot-form"><label for="forgot-code">Código de recuperación</label><input id="forgot-code" name="code" required autocapitalize="characters" autocomplete="off" placeholder="XXXX-XXXX-...">
+    <label for="forgot-password">Nueva contraseña (mínimo 8 caracteres)</label><input id="forgot-password" name="password" type="password" minlength="8" autocomplete="new-password" required>
+    <label for="forgot-confirm">Repetir nueva contraseña</label><input id="forgot-confirm" type="password" minlength="8" autocomplete="new-password" required>
+    <p class="welcome-error" role="alert" hidden></p><button class="welcome-primary" type="submit">Restablecer contraseña</button></form>
+    <button type="button" class="welcome-secondary" id="forgot-back">Volver a desbloquear</button>`;
+  card.querySelector('#forgot-back').addEventListener('click',showLock);
+  card.querySelector('#forgot-form').addEventListener('submit',async ev=>{
+    ev.preventDefault();if(lockBusy)return;
+    const f=ev.currentTarget, password=f.elements.password.value;
+    if(password.length<8||password!==f.querySelector('#forgot-confirm').value){showError(lockScreen,'Verifica la nueva contraseña y su confirmación (mínimo 8 caracteres).');return;}
+    lockBusy=true;f.querySelector('button[type="submit"]').disabled=true;
+    try{
+      const {data,code}=await security.recover(f.elements.code.value,password);
+      db={...blank(),...data,profile:{...blank().profile,...data.profile},opening:{...blank().opening,...data.opening}};
       await security.disable(db);
-    }else{
-      if(!d.password || d.password.length<8)throw Error('La contraseña debe tener al menos 8 caracteres.');
-      if(d.password!==d.repeat)throw Error('Las contraseñas nuevas no coinciden.');
-      await security.enable(d.password,db);
-    }
-    closeModal();render();toast(operation==='remove'?'Contraseña eliminada':'Contraseña configurada');
-  }catch(err){
-    const e=f.querySelector('.welcome-error');e.hidden=false;
-    e.textContent=/decrypt|operation|incorrect|auth/i.test(String(err))?'La contraseña actual es incorrecta.':(err.message||'No se pudo actualizar la contraseña.');
-  }finally{saveButton.disabled=false;}
+      applyFixedSchedules();
+      f.reset();lockScreen.hidden=true;toggleShell(true);page='home';render();
+      toast('Datos recuperados. Ya no necesitas contraseña en esta versión.');
+    }catch{showError(lockScreen,'Código incorrecto o archivo cifrado dañado. Revisa el código y vuelve a intentar.');}
+    finally{lockBusy=false;const b=f.querySelector('button[type="submit"]');if(b)b.disabled=false;}
+  });
 }
-
 function startApplication(){
   if(security.hasVault())return showLock();
   const stored=localStorage.getItem(KEY);
   const existing=Boolean(stored&&(db.transactions.length||db.goals.length||db.recurring.length||db.profile.name||db.demo));
   if(!security.hasOnboarded()&&!existing)return openWelcome();
   if(existing)security.finishOnboarding();
+  applyFixedSchedules();
   toggleShell(true);render();
 }
 
@@ -175,12 +177,15 @@ function startTour(){
   if(!document.getElementById('app-shell').hidden){
     lastTourFocus=document.activeElement;
     currentStep=0;tourLayer.hidden=false;
+    document.documentElement.classList.add('tour-frozen');
+    document.body.classList.add('tour-active');
     renderTourStep();
   }
 }
 function finishTour(){
   currentStep=-1;tourLayer.hidden=true;
   document.body.classList.remove('tour-active');
+  document.documentElement.classList.remove('tour-frozen');
   if(lastTourFocus?.isConnected)lastTourFocus.focus({preventScroll:true});
   lastTourFocus=null;
 }
@@ -203,7 +208,8 @@ function renderTourStep(){
     const bounds=target.getBoundingClientRect();
     const availableTop=75;
     if(bounds.bottom>window.innerHeight-availableTop || bounds.top<availableTop)target.scrollIntoView({block:'center',behavior:'instant'});
-    requestAnimationFrame(positionTour);
+    tourAnchorScroll=window.scrollY;
+    requestAnimationFrame(()=>requestAnimationFrame(positionTour));
   });
 }
 function positionTour(){
@@ -243,6 +249,8 @@ document.getElementById('tour-back').addEventListener('click',()=>{
 });
 document.getElementById('tour-skip').addEventListener('click',finishTour);
 window.addEventListener('resize',()=>{if(currentStep>=0)requestAnimationFrame(positionTour);});
-window.addEventListener('scroll',()=>{if(currentStep>=0)requestAnimationFrame(positionTour);},{passive:true});
+window.addEventListener('scroll',()=>{
+  if(currentStep>=0 && Math.abs(window.scrollY-tourAnchorScroll)>2)window.scrollTo({top:tourAnchorScroll,behavior:'instant'});
+},{passive:true});
 document.addEventListener('keydown',ev=>{if(currentStep>=0&&ev.key==='Escape')finishTour();});
 startApplication();

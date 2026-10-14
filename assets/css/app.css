@@ -6,3 +6,35 @@
 @media(min-width:700px){body{padding:22px}.app-shell{min-height:calc(100vh - 44px);border:1px solid #e8ecef;border-radius:34px;overflow:clip}.brandbar{padding-top:23px}.tabbar{bottom:18px;border-radius:0 0 33px 33px}.modal-overlay{align-items:center}.modal-sheet{border-radius:24px;max-height:85vh}.page{padding-left:29px;padding-right:29px}.filter-scroll{margin-left:-29px;margin-right:-29px;padding-left:29px;padding-right:29px}}
 @media(prefers-reduced-motion:reduce){*{animation-duration:0s!important;scroll-behavior:auto!important;transition:none!important}}
 
+
+/* Accesos visibles a las funciones sin tener que investigar menús */
+.discover-panel{margin:15px 0 6px;padding:14px;border:1px solid #dceced;border-radius:18px;background:linear-gradient(130deg,#f1fbfa,#fff);box-shadow:var(--shadow)}
+.discover-head{display:flex;align-items:center;gap:8px;color:var(--teal);font-size:13px;margin-bottom:12px}
+.discover-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.discover-grid button{display:flex;align-items:center;gap:7px;justify-content:flex-start;min-height:47px;border:1px solid #e1ebed;background:white;padding:10px;border-radius:11px;color:var(--navy);font-weight:700;font-size:11px;text-align:left}
+.discover-grid button svg{color:var(--teal)}
+.profile-intro{display:flex;gap:9px;align-items:flex-start;margin:15px 0;padding:12px;background:#edf8f7;border-radius:12px;color:#346b75;font-size:12px;line-height:1.5}
+.profile-intro svg{flex-shrink:0}
+@media(max-width:350px){.discover-grid button{font-size:10.5px;padding:8px;gap:5px}}
+
+.brand-tools{display:flex;align-items:center;gap:8px}.help-trigger{height:36px;min-width:47px;padding:0 10px;border:1px solid #daeaea;background:#f0f9f8;color:var(--teal);border-radius:999px;font-weight:900;font-size:18px}
+
+/* Finanzas fijas — cálculos simples y accesibles en pantallas pequeñas */
+.fixed-home,.forecast-card{background:#edf8f7;border:1px solid #d2eeeb;border-radius:18px;padding:16px;margin:17px 0 13px;color:var(--navy)}
+.fixed-home-title,.forecast-header{display:flex;align-items:center;gap:9px;font-size:14px}
+.fixed-home>p,.forecast-card>p{color:#587883;line-height:1.55;font-size:11.5px;margin:9px 0}
+.fixed-figures,.forecast-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:13px 0 8px}
+.fixed-figures>div,.forecast-grid>div{background:#fff;border-radius:12px;padding:11px;min-width:0}
+.fixed-figures span,.forecast-grid span,.forecast-result span{display:block;font-size:10.5px;color:#5b7780;margin-bottom:5px}
+.fixed-figures strong,.forecast-grid strong,.forecast-result strong{display:block;font-size:16px;letter-spacing:-.4px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.fixed-figures .fixed-net{grid-column:span 2;background:#d3f0eb}
+.fixed-home small{color:#64858b;display:block;font-size:10px;line-height:1.4}
+.fixed-tip{font-size:12px;line-height:1.55;padding:10px 12px;background:white;border-radius:12px;margin:12px 0;color:#345863}
+.fixed-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:13px}
+.fixed-buttons button{border:1px solid #b2dcd9;background:white;border-radius:12px;color:var(--teal);font-size:11px;font-weight:800;display:flex;justify-content:center;align-items:center;gap:7px;min-height:43px;padding:8px}
+.forecast-result{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#d3f0eb;border-radius:12px;padding:12px}
+.rec-auto{display:flex;gap:11px;padding:12px;background:#edf8f7;border:1px solid #cde8e5;border-radius:12px;margin:4px 0 15px;align-items:flex-start}
+.rec-auto input{height:19px;width:19px;accent-color:var(--teal);flex-shrink:0}
+.rec-auto strong{font-size:12.5px;color:var(--navy);display:block;line-height:1.4}
+.rec-auto small{font-size:11px;line-height:1.5;display:block;color:var(--muted);margin-top:4px}
+@media(max-width:350px){.fixed-home,.forecast-card{padding:12px}.fixed-buttons button{font-size:10px}}
