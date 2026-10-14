@@ -1,0 +1,43 @@
+/* Bienvenida, bloqueo y guía tipo videojuego. */
+.welcome-screen{position:fixed;inset:0;overflow-y:auto;z-index:80;background:linear-gradient(148deg,#f4faf9 0%,#fff 62%,#e7f5f6 100%);padding:max(32px,env(safe-area-inset-top)) 18px max(20px,env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:center}
+.welcome-shell{width:min(100%,420px);animation:enter .28s ease-out}
+.welcome-brand{display:flex;align-items:center;gap:9px;font-size:18px;font-weight:850;letter-spacing:-.6px;color:var(--navy);justify-content:center;margin:0 0 22px}
+.welcome-card{background:#fff;border:1px solid #e7eff1;border-radius:27px;padding:24px 22px;box-shadow:0 20px 70px rgba(9,49,67,.095)}
+.welcome-art{height:109px;width:109px;margin:0 auto 17px;border-radius:33px;display:flex;align-items:center;justify-content:center;position:relative;background:linear-gradient(135deg,#ddf8f1,#c8e8f1);color:#006274}
+.welcome-art::before,.welcome-art::after{position:absolute;content:'';border-radius:999px;background:#fff;opacity:.95}
+.welcome-art::before{width:19px;height:7px;top:24px;right:-15px;transform:rotate(-20deg)}
+.welcome-art::after{width:7px;height:18px;bottom:-11px;left:16px;transform:rotate(25deg)}
+.welcome-card h1{font-size:25px;line-height:1.15;text-align:center;margin:0 0 10px;color:var(--navy);letter-spacing:-.9px}
+.welcome-card .welcome-intro{text-align:center;font-size:13px;color:var(--muted);line-height:1.6;margin:0 0 19px}
+.welcome-card .welcome-choice{border:1px solid #daebed;border-radius:15px;padding:14px;background:#f7fbfc;margin:7px 0 15px}
+.welcome-choice label{display:flex;gap:8px;align-items:center;font-weight:800;font-size:13px;color:var(--navy);cursor:pointer}
+.welcome-choice input{accent-color:var(--teal);width:18px;height:18px}
+.welcome-choice p{margin:7px 0 0 26px;color:var(--muted);font-size:11px;line-height:1.5}
+.welcome-card label[for]{display:block;font-size:12px;font-weight:780;margin:0 0 7px}
+.welcome-card input:not([type=checkbox]){display:block;width:100%;background:#fff;border:1px solid #dce7ea;border-radius:12px;min-height:48px;padding:12px;color:var(--ink);margin-bottom:14px}
+.welcome-card input:focus{outline:2px solid #60c7c6;outline-offset:2px}
+.welcome-primary{width:100%;min-height:49px;background:var(--teal);color:#fff;border:none;border-radius:13px;font-weight:820;margin-top:4px}
+.welcome-secondary{display:block;width:100%;border:none;background:transparent;color:#5a7485;padding:13px;font-weight:730;font-size:12px;margin-top:3px}
+.welcome-help{margin:15px 0 0;color:#708397;font-size:11px;line-height:1.55;text-align:center}
+.welcome-error{color:#bb4e46;background:#fff1ee;border-radius:11px;padding:10px 12px;font-size:12px;margin:0 0 12px}
+.welcome-pill{display:table;background:#e4f5f2;color:#006875;border-radius:99px;padding:6px 11px;font-size:10px;font-weight:840;letter-spacing:.8px;margin:0 auto 12px}
+.tour-layer{position:fixed;inset:0;z-index:90;overflow:hidden}
+.tour-blocker{position:absolute;inset:0;z-index:1;background:transparent}
+.tour-spotlight{position:fixed;top:0;left:0;pointer-events:none;border:3px solid #8de2d6;border-radius:19px;box-shadow:0 0 0 300vmax rgba(2,19,34,.73),0 0 0 7px rgba(111,221,210,.17);z-index:2;transition:top .22s,left .22s,width .22s,height .22s}
+.tour-bubble{position:fixed;z-index:3;width:min(355px,calc(100vw - 28px));border-radius:20px;background:#fff;box-shadow:0 15px 65px rgba(3,21,37,.35);padding:19px 18px 15px;color:var(--navy)}
+.tour-bubble::before{content:'';position:absolute;width:16px;height:16px;background:white;transform:rotate(45deg);top:-7px;left:var(--pointer-x,45%);border-radius:2px}
+.tour-bubble[data-arrow="down"]::before{top:auto;bottom:-7px}
+.tour-topline{display:flex;justify-content:space-between;align-items:center;color:#78909d;font-weight:730;font-size:10px;letter-spacing:.4px;margin-bottom:9px}
+.tour-label{color:#008981;font-weight:900;letter-spacing:1px}
+.tour-bubble h2{font-size:18px;letter-spacing:-.5px;line-height:1.2;margin:0 0 7px}
+.tour-bubble p{font-size:12.5px;color:#4d6474;line-height:1.55;margin:0 0 17px}
+.tour-controls,.tour-controls>div{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.tour-text-btn{background:none;border:0;color:#788998;font-size:11px;font-weight:750;padding:7px 0}
+.tour-back{border:0;background:#eef4f5;border-radius:10px;color:#446774;min-height:40px;padding:9px 12px;font-size:11px;font-weight:760}
+.tour-controls .primary-btn{min-height:40px;padding:9px 13px;font-size:11px}
+.privacy-head{display:flex;align-items:center;gap:12px}
+.privacy-head>div:last-child{flex:1;min-width:0}
+.privacy-actions{display:flex;flex-wrap:wrap;gap:8px;margin:13px 0}
+.privacy-actions button{flex:1}
+@media(max-width:360px){.welcome-card{padding:20px 17px}.tour-bubble{padding:15px 14px}.tour-bubble h2{font-size:16px}}
+@media(min-width:700px){.welcome-screen{background:linear-gradient(135deg,#ebf6f4,#e5f0f6)}.tour-bubble{width:355px}}
