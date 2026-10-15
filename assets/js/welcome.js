@@ -13,7 +13,7 @@ const WELCOME_TOUR = [
   {page:'goals',selector:'.coach-intro',title:'Mejora tus hábitos',description:'Cada meta tiene un plan para reducir gastos hormiga, comparar productos caros y calcular posibles ahorros. Solo se registra dinero cuando realmente lo apartas.'},
   {page:'goals',selector:'.goals-switch',title:'Planifica antes de gastar',description:'En Plan mensual calculas sueldo y gastos fijos. Puedes anotarlos al llegar su fecha, cuando abras la app. Revisa que sean correctos.'},
   {page:'profile',selector:'#profile-form',title:'Tu perfil está aquí',description:'Pulsa el ícono de usuario de arriba para editar tu nombre y saldos iniciales cuando quieras.'},
-  {page:'settings',selector:'#privacy-panel',title:'Tus datos y ayuda',description:'Tus registros se guardan en este navegador. Desde Ajustes puedes hacer respaldos y repetir la guía.'}
+  {page:'settings',selector:'#privacy-panel',title:'Privacidad y respaldos',description:'Los datos quedan en este navegador. En Ajustes puedes respaldarlos; para resolver dudas usa el signo ? del encabezado.'}
 ];
 let currentStep = -1;
 let lastTourFocus = null;

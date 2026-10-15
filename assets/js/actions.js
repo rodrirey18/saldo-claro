@@ -27,7 +27,8 @@ function storeSalary(f){
    {title:label+' · Fin de mes',amount:round(total-round(total/2)),day:31}
  ]:[{title:label,amount:total,day:31}];
  if(salaryRules.some(r=>r.amount<=0))return toast('Para dos pagos, el sueldo debe ser de al menos 0.02.');
- for(const x of salaryRules)db.recurring.push({id:uid(),...x,type:'income',category:'Sueldo',account:d.account||'digital',auto:d.auto==='on',startMonth:thisMonth()});
+ db.recurring=db.recurring.filter(r=>r.salaryGroup!=='primary');
+ for(const x of salaryRules)db.recurring.push({id:uid(),...x,type:'income',category:'Sueldo',account:d.account||'digital',auto:d.auto==='on',startMonth:thisMonth(),salaryGroup:'primary'});
  save();applyFixedSchedules();closeModal();render();toast('Sueldo fijo configurado: '+salaryRules.length+' pago(s) por mes');
 }
 function storeProfile(f){const d=Object.fromEntries(new FormData(f));for(const field of ['digital','cash','savings'])if(!Number.isFinite(Number(d[field]))||Number(d[field])<0)return toast('Los saldos iniciales deben ser valores válidos.');if(db.profile.currency!==d.currency&&db.transactions.length&&!confirm('Cambiar moneda NO convertirá los importes de tus movimientos. ¿Continuar?'))return;db.profile.name=d.name?.trim()||'';db.profile.currency=d.currency;for(const x of ['digital','cash','savings'])db.opening[x]=round(Number(d[x]));save();render();toast('Mi perfil se guardó correctamente')}
