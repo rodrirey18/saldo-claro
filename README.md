@@ -1,68 +1,69 @@
-# Saldo Claro v6 — Maqueta móvil
+# Saldo Claro v7 — Proyecto para VS Code y GitHub Pages
 
-App de finanzas personales (HTML, CSS y JavaScript, sin dependencias externas). Puedes publicarla gratis en GitHub Pages. Los registros se guardan **localmente en el navegador**: no hay cuentas, contraseñas nuevas, sincronización con otros dispositivos ni conexión bancaria.
+Prototipo web para celular hecho con HTML, CSS y JavaScript, sin servicios externos ni instalaciones de paquetes. No tiene una cuenta en servidor; los registros se guardan en el navegador del dispositivo. **No es una conexión bancaria ni un servicio de almacenamiento seguro para terceros.**
 
-## Cambios frente a v5
+## Novedades de v7
 
-- La **guía tipo cómic conserva el mismo diseño**. Mientras un paso está abierto, la página no se mueve con el desplazamiento manual. Al pulsar **Siguiente** la app centra el nuevo elemento señalado.
-- La bienvenida ahora pregunta **solo cómo quieres que te llamen**; el nombre es opcional. Se retiró la opción de crear una contraseña y sus botones en Ajustes.
-- **Compatibilidad con v5 cifrada:** si habías activado contraseña en v5, tendrás que introducirla **una última vez** para descifrar y pasar tus registros a almacenamiento local **sin contraseña**. La recuperación anterior permanece disponible exclusivamente para esa migración. No borres los datos del navegador antes de exportar una copia.
-- Añadimos **Configurar sueldo**: un solo ingreso a fin de mes o dos ingresos (día 15 y último día). Se introduce el **total mensual** y la app divide automáticamente si eliges dos pagos.
-- Añadimos **ingresos y gastos fijos mensuales** (servicios, alquiler, suscripciones, etc.): título, importe, fecha, canal y categoría. Puedes editar o eliminar reglas.
-- El resumen y la sección **Metas → Plan mensual** muestran la **proyección del mes:** ingresos fijos − gastos fijos = dinero previsto para gastos variables, ahorro u otros usos.
-- Opción **Registrar automáticamente al llegar la fecha**: cuando abres o regresas a la app y el día de cobro/pago ya llegó, añade una anotación al libro. No duplica el mismo compromiso en el mismo mes. Si eliminas una de estas anotaciones, no se vuelve a crear en ese mes.
-- Los movimientos automáticos son **suposiciones basadas en lo programado**, ya que Saldo Claro NO conoce tus cuentas bancarias. **Comprueba cada pago e ingreso real** y edítalo si el importe o la fecha cambió. Puedes desmarcar la opción para llevar solo la proyección y registrar el movimiento real manualmente.
-- Los meses futuros mantienen su **proyección**, pero no se registra dinero como recibido o gastado antes de su fecha. Las reglas nuevas comienzan en el mes en que las guardas, no modifican el historial anterior.
+- **Sueldo fijo previsto vs. ingreso real:** el resumen de ingresos sigue mostrando solo cobros registrados. Los sueldos por confirmar aparecen ahora en Inicio con **«Ya lo recibí»**, que abre el formulario de registro real. Se conserva el cálculo mensual programado de v6.
+- **¿Cuánto dinero tengo?:** «Comprobar mi dinero» permite escribir el dinero digital y efectivo que hay realmente. Si todavía no hay movimientos, guarda saldos iniciales. Si ya los hay, calcula y registra una **diferencia por identificar**, sin atribuirla a gastos o ingresos conocidos. Queda en Movimientos y se puede eliminar para sustituirla por la operación real si se descubre su causa.
+- **Centro de ayuda y buscador:** signo `?` arriba a la derecha. Permite escribir `sueldo`, `gastos hormiga`, `Yape`, `dólares`, `saldo negativo`, etc. Muestra preguntas y funciones relacionadas, con acceso a la pantalla correspondiente. La guía tipo cómic continúa disponible allí; no se cambió su apariencia.
+- **Menos duplicaciones:** quitados los accesos repetidos al tutorial en Ajustes y en Inicio. Ayuda detallada y buscador tienen un solo lugar. Se mantienen los accesos directos útiles para registrar gastos, ingresos y mover dinero.
+- **Reconfigurar sueldo:** una regla de sueldo creada con el formulario **Mi sueldo fijo** se sustituye en una edición posterior del mismo formulario, en lugar de generar repetidos. Las reglas creadas en versiones antiguas sin ese identificador deben revisarse desde Plan mensual si estaban duplicadas.
 
-## Archivos
+## Organización
 
-```
-SaldoClaro_v6/
+```text
+saldo-claro/
 ├── index.html
 ├── README.md
 └── assets/
     ├── css/
     │   ├── app.css
     │   ├── coach.css
-    │   └── welcome.css
+    │   ├── welcome.css
+    │   └── help.css             # NUEVO
     ├── icons/
-    │   ├── apple-touch-icon.png
-    │   └── icon.svg
+    │   ├── icon.svg
+    │   └── apple-touch-icon.png
     └── js/
         ├── icons.js
-        ├── security.js       # Solo compatibilidad/migración de datos cifrados v5
+        ├── security.js          # compatibilidad con datos v5
         ├── data.js
-        ├── recurring.js      # Nuevo: cálculo y reglas fijas
+        ├── recurring.js
         ├── views.js
         ├── coach.js
+        ├── help.js              # NUEVO
+        ├── reconcile.js         # NUEVO
         ├── actions.js
         ├── app.js
         └── welcome.js
 ```
 
-## Probar en Visual Studio Code
+## Probarlo en Visual Studio Code
 
-1. Extrae el ZIP en una carpeta.
-2. Ábrela en Visual Studio Code (**Archivo → Abrir carpeta**).
-3. Abre `index.html` con la extensión **Live Server**, o abre el archivo con Chrome para probarlo localmente. Se recomienda Live Server para la prueba real del sitio.
+1. Extrae el ZIP y abre la carpeta en VS Code.
+2. Instala **Live Server** si no lo tienes.
+3. Haz clic derecho en `index.html` y selecciona **Open with Live Server**.
+4. En el celular, después de publicarlo en GitHub Pages, prueba la bienvenida, confirma un sueldo programado, haz una comprobación de saldos y busca una respuesta en `?`.
 
-## Actualizar tu GitHub SIN usar Git en VS Code
+## Actualizar la misma web desde GitHub (sin subir con VS Code)
 
-1. Antes de actualizar, abre tu página actual y ve a **Ajustes → Exportar** para guardar un respaldo JSON en un lugar privado. NO subas ese JSON a GitHub.
-2. Abre https://github.com/rodrirey18/saldo-claro
-3. Elige **Add file → Upload files**.
-4. En el Explorador de Windows, abre la carpeta extraída y **arrastra `index.html`, `README.md` y la carpeta `assets/`**, juntos, al cuadro grande de GitHub; NO arrastres el ZIP.
-5. Comprueba que los archivos dentro de `assets/js/`, `assets/css/` y `assets/icons/` se muestran correctamente y pulsa **Commit changes**.
-6. Si tienes **Settings → Pages** configurado con **main** y **/(root)**, espera a que termine la publicación y visita https://rodrirey18.github.io/saldo-claro/.
-7. Recarga la página en el navegador para cargar los archivos nuevos. En caso de que siga apareciendo la versión anterior, prueba una pestaña privada SIN importar datos personales.
+1. Antes de actualizar, en la versión actual entra en **Ajustes → Tus datos → Exportar** y guarda un respaldo de tus datos reales si existen.
+2. Abre **https://github.com/rodrirey18/saldo-claro**, pestaña **Code**.
+3. Pulsa **Add file → Upload files**.
+4. Arrastra **`index.html`**, **`README.md`** y **toda la carpeta `assets`** de la v7; conserva las subcarpetas. Esta versión añade `help.css`, `help.js` y `reconcile.js`, así que no basta con reemplazar el HTML.
+5. Confirma **Commit changes** sobre la rama `main`.
+6. En **Actions**, espera a que termine la publicación de Pages. Abre **https://rodrirey18.github.io/saldo-claro/** y actualiza la pestaña. Si conserva una copia vieja, recarga ignorando caché.
 
-### Seguridad y límites
+El repositorio debe seguir siendo **público** para usar GitHub Pages con GitHub Free. El código público NO significa que los registros guardados en el navegador se suban a GitHub: no se envían por defecto. No publiques archivos JSON con finanzas personales.
 
-- Los registros se almacenan en `localStorage`, sin contraseña. Cualquier persona que use el mismo perfil del navegador puede verlos. No representa un producto listo para datos financieros sensibles.
-- Si limpias datos del navegador o cambias de dispositivo, se perderán los registros salvo que exportes y luego importes el respaldo JSON.
-- Los movimientos fijos automáticos son **anotaciones estimadas**, no cargos bancarios reales. Compruébalos antes de tomar decisiones económicas.
-- Puedes cambiar el importe de cualquier anotación automática en **Movimientos** si el cargo fue distinto al previsto.
+## Importante sobre balances
 
-## Comprobaciones realizadas
+- **Previsto** = cálculo de ingresos y cargos configurados para el mes.
+- **Ingreso real** = movimiento de dinero recibido registrado por el usuario, manualmente o por anotación automática en la fecha prevista. Una anotación automática **no comprueba** que el dinero haya llegado al banco.
+- **Diferencia por identificar** = dinero faltante o sobrante comparado con lo contado; **no podemos saber en qué gastó la persona** sin más información. Se excluye de las categorías y de los totales de ingresos/gastos clasificados. Si se descubre la operación correcta, hay que **eliminar la diferencia correspondiente** y registrar el ingreso/gasto/transferencia real para no contar dos veces.
+- Los saldos iniciales son anteriores a los movimientos. Cambiarlos después altera toda la historia, así que conviene usar **Comprobar mi dinero** para ajustar discrepancias posteriores.
 
-Probado en navegador Chromium con interfaz de 390 y 320 px: primer ingreso, guía que no se desplaza, sueldo en dos pagos, regla fija de gasto, proyección de S/ 1,000 - S/ 400 = S/ 600, prevención de cargos duplicados, eliminación de anotación automática, perfil y Ajustes. No se realizó en esta sesión una prueba real en Safari de iPhone ni la migración completa de una cuenta cifrada v5 desde su dispositivo original.
+## Seguridad y sincronización
+
+Cada navegador almacena sus datos con `localStorage`. No hay contraseña en v7 ni cuentas remotas, sincronización, respaldo automático ni validación bancaria. Los datos pueden desaparecer si borras los datos del navegador. Exporta respaldos privados periódicamente. La versión no implementa pagos en moneda extranjera por movimiento.
