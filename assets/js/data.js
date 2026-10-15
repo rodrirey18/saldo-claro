@@ -16,9 +16,32 @@ const nameOf=a=>({digital:'Digital',cash:'Efectivo',savings:'Ahorros'})[a]||'Cue
 const typeName=t=>({income:'Ingreso',expense:'Gasto',save:'Aporte a ahorro',withdraw:'Retiro de ahorro',transfer:'Transferencia',adjustment:'Diferencia por identificar'})[t]||'Movimiento';
 const blank=()=>({schema:2,profile:{name:'',currency:'PEN'},opening:{digital:0,cash:0,savings:0},openingMonth:null,categories:structuredClone(CATS),transactions:[],goals:[],budgets:{},recurring:[],strategies:[],skippedRecurring:[],demo:false});
 function load(){if(security.hasVault())return blank();try{const a=JSON.parse(localStorage.getItem(KEY));if(a?.schema!==2||!Array.isArray(a.transactions)||!Array.isArray(a.goals))return blank();const b=blank();return {...b,...a,profile:{...b.profile,...a.profile},opening:{...b.opening,...a.opening},categories:{...b.categories,...a.categories}}}catch{return blank()}}
-let db=load();let coachGoalId='';let coachSmallLimit=20;let page='home';let goalTab='goals';let month=thisMonth();let filter='all';let searchOpen=false;let searchText='';let showBalance=true;let focusReturn=null;
+// El modo de prueba guarda sus modificaciones SOLO en sessionStorage, separado de los datos reales.
+const DEMO_ACTIVE_KEY='saldo-claro:demo-active-v9';
+const DEMO_SESSION_KEY='saldo-claro:demo-data-v9';
+let demoMode=false;
+let previousRealData=null;
+function restoreDemoSession(){
+ try{
+  if(sessionStorage.getItem(DEMO_ACTIVE_KEY)!=='1')return null;
+  const stored=JSON.parse(sessionStorage.getItem(DEMO_SESSION_KEY)||'null');
+  if(stored?.schema===2 && stored.demo===true && Array.isArray(stored.transactions) && Array.isArray(stored.goals)){
+    demoMode=true;return {...blank(),...stored};
+  }
+ }catch{};
+ try{sessionStorage.removeItem(DEMO_ACTIVE_KEY);sessionStorage.removeItem(DEMO_SESSION_KEY)}catch{}
+ return null;
+}
+function keepDemoSession(){
+ try{sessionStorage.setItem(DEMO_SESSION_KEY,JSON.stringify(db));sessionStorage.setItem(DEMO_ACTIVE_KEY,'1');return true}
+ catch{return false}
+}
+function forgetDemoSession(){
+ try{sessionStorage.removeItem(DEMO_ACTIVE_KEY);sessionStorage.removeItem(DEMO_SESSION_KEY)}catch{}
+}
+let db=restoreDemoSession()||load();let coachGoalId='';let coachSmallLimit=20;let page='home';let goalTab='goals';let month=thisMonth();let filter='all';let searchOpen=false;let searchText='';let showBalance=true;let focusReturn=null;
 const $=id=>document.getElementById(id);
-function save(){try{if(security.isUnlocked()){security.persist(db).catch(()=>toast('No se pudo guardar el archivo cifrado.'));return true}if(security.hasVault())return false;localStorage.setItem(KEY,JSON.stringify(db));return true}catch{alert('No se pudo guardar. Revisa el espacio disponible del navegador.');return false}}
+function save(){try{if(demoMode)return keepDemoSession();if(security.isUnlocked()){security.persist(db).catch(()=>toast('No se pudo guardar el archivo cifrado.'));return true}if(security.hasVault())return false;localStorage.setItem(KEY,JSON.stringify(db));return true}catch{alert('No se pudo guardar. Revisa el espacio disponible del navegador.');return false}}
 function money(n){try{return new Intl.NumberFormat('es-PE',{style:'currency',currency:db.profile.currency||'PEN',minimumFractionDigits:2,maximumFractionDigits:2}).format(round(amt(n)))}catch{return `S/ ${round(amt(n)).toFixed(2)}`}}
 function maybeMoney(n){return showBalance?money(n):'••••••'}
 function changed(t,w){const a=amt(t.amount);switch(t.type){case'income':return t.to===w?a:0;case'expense':return t.from===w?-a:0;case'save':return w==='savings'?a:t.from===w?-a:0;case'withdraw':return w==='savings'?-a:t.to===w?a:0;case'transfer':return (t.to===w?a:0)-(t.from===w?a:0);case'adjustment':return t.account===w?(t.direction==='increase'?a:-a):0;default:return 0}}

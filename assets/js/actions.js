@@ -33,8 +33,12 @@ function storeSalary(f){
 }
 function storeProfile(f){const d=Object.fromEntries(new FormData(f));for(const field of ['digital','cash','savings'])if(!Number.isFinite(Number(d[field]))||Number(d[field])<0)return toast('Los saldos iniciales deben ser valores válidos.');if(db.profile.currency!==d.currency&&db.transactions.length&&!confirm('Cambiar moneda NO convertirá los importes de tus movimientos. ¿Continuar?'))return;db.profile.name=d.name?.trim()||'';db.profile.currency=d.currency;for(const x of ['digital','cash','savings'])db.opening[x]=round(Number(d[x]));save();render();toast('Mi perfil se guardó correctamente')}
 function storeCategory(f){const d=Object.fromEntries(new FormData(f)),s=(d.name||'').trim();if(!s)return;const existing=db.categories[d.type];if(existing.some(c=>c.toLowerCase()===s.toLowerCase()))return toast('Esta categoría ya existe.');existing.push(s);save();render();toast('Categoría añadida')}
-function sample(){if((db.transactions.length||db.goals.length||db.recurring.length||db.profile.name)&&!confirm('Esto reemplazará tus datos actuales por datos FICTICIOS. Exporta una copia antes si deseas conservarlos. ¿Continuar?'))return;
- const b=blank();b.demo=true;b.profile.name=db.profile.name||'Alex';b.opening={digital:750,cash:160,savings:200};const mo=thisMonth(),previous=(()=>{let[y,m]=mo.split('-').map(Number),d=new Date(y,m-2,1);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`})();
+function sample(){
+ if(demoMode)return toast('Ya estás probando los datos ficticios.');
+ if(!confirm('¿Quieres entrar al MODO DE PRUEBA con datos ficticios?\n\nTus ingresos, gastos, metas y saldos reales quedarán intactos. Podrás volver a ellos desde el botón «Volver a mis datos reales».'))return;
+ previousRealData=db;
+
+ const b=blank();b.demo=true;b.profile.name='Alex';b.opening={digital:750,cash:160,savings:200};const mo=thisMonth(),previous=(()=>{let[y,m]=mo.split('-').map(Number),d=new Date(y,m-2,1);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`})();
  b.openingMonth=previous;const g1={id:uid(),name:'Laptop',target:3000,note:'Para mis estudios y trabajo',icon:'laptop',deadline:''};const g2={id:uid(),name:'Viaje a Cusco',target:2000,note:'Aventura y descanso',icon:'plane',deadline:''};b.goals=[g1,g2];b.strategies=[
  {id:uid(),goalId:g1.id,title:'Reducir snacks y antojos',kind:'hormiga',description:'Llevar una merienda preparada en vez de comprarla varios días.',before:35,after:15,frequency:'week',active:true},
  {id:uid(),goalId:g1.id,title:'Comparar marcas y precios',kind:'precio',description:'Buscar una alternativa de calidad similar que cueste menos.',before:100,after:75,frequency:'month',active:true},
@@ -49,7 +53,21 @@ function sample(){if((db.transactions.length||db.goals.length||db.recurring.leng
  [1,'income',1250,'Quincena','Sueldo','','digital','',b.recurring[0].id],[2,'expense',34.90,'HBO','Suscripciones','digital','','',b.recurring[1].id],[3,'expense',20.90,'YouTube Music','Suscripciones','digital','','',b.recurring[2].id],[4,'expense',60,'Baile','Entretenimiento','digital'],[5,'expense',200,'Aporte casa','Casa','digital','','',b.recurring[3].id],[6,'expense',45,'Restaurante','Alimentación','cash'],[7,'transfer',100,'Digital a efectivo','','digital','cash']]){
  const d=`${mo}-${String(day).padStart(2,'0')}`;if(d<=now())add(d,type,value,title,cat,from,to,gid,rid,mo)
  }
- b.budgets[mo]={Casa:250,Alimentación:180,Suscripciones:90,Transporte:80,Entretenimiento:180,Educación:150};db=b;save();month=mo;filter='all';searchText='';goalTab='goals';page='home';render();toast('Datos ficticios cargados para la demostración')
+ b.budgets[mo]={Casa:250,Alimentación:180,Suscripciones:90,Transporte:80,Entretenimiento:180,Educación:150};
+ db=b;demoMode=true;
+ if(!save())toast('La demostración funcionará hasta cerrar esta pestaña.');
+ month=mo;filter='all';searchText='';goalTab='goals';page='home';render();window.scrollTo(0,0);
+ toast('Modo de prueba activado. Tus datos reales están a salvo.')
 }
-function exportBackup(){const data=JSON.stringify(db,null,2);const blob=new Blob([data],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`saldo-claro-respaldo-${now()}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);toast('Respaldo descargado. Guárdalo de forma privada.')}
-function importBackup(file){if(!file)return;if(file.size>5_000_000)return toast('El archivo es demasiado grande.');const reader=new FileReader();reader.onload=()=>{try{const d=JSON.parse(reader.result);if(d.schema!==2||!Array.isArray(d.transactions)||!Array.isArray(d.goals)||!Array.isArray(d.recurring)||typeof d.profile!=='object'||typeof d.opening!=='object'||!d.budgets||!d.categories||!Array.isArray(d.categories.expense)||!Array.isArray(d.categories.income))throw new Error('Formato');if(!confirm('Se reemplazarán todos los datos de este navegador por el respaldo seleccionado. ¿Continuar?'))return;db={...blank(),...d,profile:{...blank().profile,...d.profile},opening:{...blank().opening,...d.opening}};save();applyFixedSchedules();page='home';render();toast('Respaldo importado')}catch{toast('Archivo incompatible o inválido.')}finally{$('import-file').value=''}};reader.readAsText(file)}
+function returnToReal(){
+ if(!demoMode)return;
+ if(!confirm('¿Volver a tus datos reales?\n\nLos cambios realizados en la demostración se descartarán. Tus registros reales no han sido modificados.'))return;
+ demoMode=false;
+ forgetDemoSession();
+ db=previousRealData||load();previousRealData=null;
+ month=thisMonth();filter='all';searchText='';goalTab='goals';page='home';
+ // La demostración nunca escribe en localStorage y el regreso tampoco necesita guardar.
+ render();window.scrollTo(0,0);toast('Regresaste a tus datos reales.');
+}
+function exportBackup(){if(demoMode)return toast('Vuelve a tus datos reales para guardar una copia.');const data=JSON.stringify(db,null,2);const blob=new Blob([data],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`saldo-claro-respaldo-${now()}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);toast('Respaldo descargado. Guárdalo de forma privada.')}
+function importBackup(file){if(demoMode)return toast('Vuelve a tus datos reales antes de recuperar una copia.');if(!file)return;if(file.size>5_000_000)return toast('El archivo es demasiado grande.');const reader=new FileReader();reader.onload=()=>{try{const d=JSON.parse(reader.result);if(d.schema!==2||!Array.isArray(d.transactions)||!Array.isArray(d.goals)||!Array.isArray(d.recurring)||typeof d.profile!=='object'||typeof d.opening!=='object'||!d.budgets||!d.categories||!Array.isArray(d.categories.expense)||!Array.isArray(d.categories.income))throw new Error('Formato');if(!confirm('Se reemplazarán todos los datos de este navegador por el respaldo seleccionado. ¿Continuar?'))return;db={...blank(),...d,profile:{...blank().profile,...d.profile},opening:{...blank().opening,...d.opening}};save();applyFixedSchedules();page='home';render();toast('Respaldo importado')}catch{toast('Archivo incompatible o inválido.')}finally{$('import-file').value=''}};reader.readAsText(file)}

@@ -198,6 +198,9 @@ function openForgotPassword(){
   });
 }
 function startApplication(){
+  // Si quedó una demostración abierta sobre una bóveda protegida antigua,
+  // primero es necesario recuperar los datos reales; nunca guardamos la demo encima de la bóveda.
+  if(security.hasVault()&&demoMode){demoMode=false;forgetDemoSession();db=blank();}
   if(security.hasVault())return showLock();
   const stored=localStorage.getItem(KEY);
   const existing=Boolean(stored&&(db.transactions.length||db.goals.length||db.recurring.length||db.profile.name||db.demo));

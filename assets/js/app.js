@@ -34,8 +34,14 @@ function handleAction(btn){const a=btn.dataset.action,id=btn.dataset.id;
  if(a==='setup-salary')return salaryForm();if(a==='add-recurring')return recurringForm({type:btn.dataset.type||'expense'});if(a==='edit-recurring'){const r=db.recurring.find(x=>x.id===id);if(r)return recurringForm(r)}
  if(a==='delete-recurring'){if(confirm('¿Eliminar este compromiso? No se borrarán los movimientos que ya registraste.')){db.recurring=db.recurring.filter(r=>r.id!==id);save();closeModal();render();toast('Compromiso eliminado')}return}
  if(a==='record-recurring'){const r=db.recurring.find(x=>x.id===id);if(!r||paid(r))return;if(month>thisMonth())return toast('Todavía no puedes registrar ingresos o gastos futuros.');const [y,m]=month.split('-').map(Number);const date=recurringDueDate(r,month);return transactionForm({type:r.type,amount:r.amount,description:r.title,category:r.category,date:date>now()?now():date,from:r.account,to:r.account,recurringId:r.id,recurringMonth:month})}
- if(a==='close-modal')return closeModal();if(a==='demo')return sample();if(a==='export')return exportBackup();if(a==='import')return $('import-file').click();
- if(a==='clear'){if(confirm('¿BORRAR todos tus datos y configuración de contraseña en este navegador? Esta acción no se puede deshacer.')){security.eraseAll().then(()=>{db=blank();month=thisMonth();page='home';render();openWelcome()}).catch(()=>toast('No se pudo borrar los datos.'))}return}
+ if(a==='close-modal')return closeModal();if(a==='demo')return sample();if(a==='demo-return')return returnToReal();if(a==='export')return exportBackup();if(a==='import')return $('import-file').click();
+ if(a==='clear'){
+  if(demoMode)return toast('Para borrar tus registros reales, primero sal del modo de prueba.');
+  const confirmation=prompt('Esta acción borrará PERMANENTEMENTE tus movimientos, metas y saldos de este navegador. No se puede deshacer.\n\nPara confirmar, escribe BORRAR:');
+  if(confirmation!=='BORRAR')return;
+  security.eraseAll().then(()=>{forgetDemoSession();previousRealData=null;db=blank();month=thisMonth();page='home';render();openWelcome();}).catch(()=>toast('No se pudo borrar los datos.'));
+  return;
+ }
   if(a==='tour-replay')return startTour();
 }
 document.addEventListener('click',ev=>{const b=ev.target.closest('[data-action]');if(b)return handleAction(b);if(ev.target===$('modal-overlay'))closeModal()});

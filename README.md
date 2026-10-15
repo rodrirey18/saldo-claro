@@ -1,8 +1,17 @@
-# Saldo Claro v8 — App de finanzas personales
+# Saldo Claro v9 — App de finanzas personales
 
 Proyecto web **mobile-first**, organizado en HTML, CSS y JavaScript. Funciona en GitHub Pages, Android, iPhone y en el navegador de la computadora. Es una maqueta funcional que guarda datos en el navegador **sin cuentas en servidor ni sincronización entre dispositivos**.
 
-## Mejoras de v8
+## Novedades de v9 · Prueba sin perder tus datos
+
+- Al pulsar «Probar con datos ficticios» se solicita confirmación **siempre**, incluso cuando todavía no hay movimientos reales.
+- Los datos de ejemplo se guardan **por separado en `sessionStorage`**, y los datos reales se mantienen en su ubicación original (`localStorage` o bóveda cifrada, si procede). Puedes editar libremente el ejemplo sin cambiar tus registros reales.
+- En el modo de prueba aparece una banda «Modo de prueba · Datos ficticios» con el botón **«Volver a mis datos»**. En Ajustes el botón cambia a **«Volver a mis datos reales»**.
+- Al regresar hay una confirmación y se desechan las modificaciones del ejemplo. Los datos reales siguen intactos. La demostración se mantiene al recargar la misma pestaña, mientras permanezca abierta; no se sincroniza con otros dispositivos.
+- Mientras se prueban ejemplos, no aparecen los botones de borrar datos reales ni de importar respaldos. La función de borrado real exige escribir `BORRAR` para confirmar.
+- Las versiones v8 y anteriores **podían reemplazar datos al cargar la demo**. Si eso ya pasó, la v9 no puede reconstruir los datos reemplazados: hay que utilizar un respaldo previo, si existe.
+
+## Mejoras incorporadas desde v8
 
 1. **Bienvenida en dos pasos:** primero el nombre o apodo (opcional); después digital, efectivo y ahorros iniciales (también opcionales). Puedes tocar **«Lo haré más tarde»**. El segundo paso es el dinero que **ya tienes**, no el sueldo futuro.
 2. **Saldo arrastrado entre meses:** en Inicio se muestran el saldo digital, efectivo y ahorros al *comenzar* el mes seleccionado, el total disponible al empezar y cómo cambió con ingresos cobrados, gastos, ahorros y diferencias sin identificar. El dinero sobrante **permanece disponible**, sin contarlo de nuevo como ingreso del mes siguiente.
@@ -57,7 +66,7 @@ Abre la carpeta extraída en VS Code y pulsa **Open with Live Server** sobre `in
 ## Reemplazar la versión de GitHub desde la web
 
 1. En la versión que ya utilizas, entra a **Ajustes → Copias de seguridad** (en v7: Ajustes → Tus datos → Exportar) y **guarda una copia** de tus datos antes de actualizar.
-2. Descomprime `SaldoClaro_v8_codigo_completo.zip`.
+2. Descomprime `SaldoClaro_v9_codigo_completo.zip`.
 3. Entra a [tu repositorio](https://github.com/rodrirey18/saldo-claro) → **Code → Add file → Upload files**.
 4. Arrastra `index.html`, `README.md` y **toda la carpeta `assets`** (conservando `css/`, `js/` e `icons/`).
 5. Pulsa **Commit changes** en `main`. Después, revisa **Actions** hasta que GitHub Pages termine la publicación.

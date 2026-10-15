@@ -60,3 +60,11 @@
 .carryover-result strong{font-size:17px;letter-spacing:-.4px;color:var(--teal);font-variant-numeric:tabular-nums;white-space:nowrap}
 .carryover-endnote{margin-bottom:0}
 @media(max-width:360px){.carryover-card{padding:14px 12px}.carryover-cells{gap:5px}.carryover-cells>div{padding:9px 6px}.carryover-cells strong{font-size:12px}.carryover-total strong{font-size:13px}}
+
+/* v9 · Demostración aislada con acceso de retorno visible */
+.demo-status{max-width:520px;margin:13px 18px 0;padding:10px 11px;background:#e6f6f2;border:1px solid #bcdfd8;border-radius:15px;color:#00515f;display:flex;align-items:center;justify-content:space-between;gap:9px;font-size:11px;box-shadow:0 5px 15px #003e4a0d}
+.demo-status[hidden]{display:none!important}
+.demo-status span{display:flex;align-items:center;gap:5px;min-width:0;flex-wrap:wrap;line-height:1.45}
+.demo-status button{color:#fff;background:#00515f;border:none;border-radius:10px;padding:10px 9px;display:flex;align-items:center;justify-content:center;gap:3px;font-weight:760;font-size:11px;white-space:nowrap;min-height:38px;flex-shrink:0}
+.demo-settings-note{display:flex;gap:8px;align-items:flex-start;color:#285f67;background:#e8f6f3;padding:12px;border-radius:12px;font-size:12px;line-height:1.5;margin:11px 0}
+@media(max-width:350px){.demo-status{margin-inline:12px;padding:8px;flex-direction:column;align-items:stretch}.demo-status button{width:100%}}
