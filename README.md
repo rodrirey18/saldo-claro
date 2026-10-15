@@ -1,4 +1,17 @@
-# Saldo Claro v9 — App de finanzas personales
+# Saldo Claro v9.2 — App de finanzas personales
+
+## Novedades de v9.2 · Más pulida y con modo oscuro
+
+- **Modo oscuro:** botón de luna/sol en el encabezado. Sin elección previa sigue el modo del teléfono (también el nocturno automático); al elegir, se **recuerda** la preferencia en el navegador (`saldo-claro-theme`). No toca tus datos financieros.
+- **Diseño renovado sobre la misma lógica:** encabezado fijo con desenfoque, barra inferior flotante con pestaña activa, tarjeta de saldo con degradado, métricas con color propio y mejor contraste en grises y montos.
+- **Movimiento más fluido:** al tocar, botones y tarjetas responden; las barras de progreso se llenan con animación; las ventanas suben desde abajo y el cambio de tema es suave. Respeta «reducir movimiento».
+- **Desajustes corregidos:** iconos que quedaban encima del texto en botones, celdas de «Saldo anterior» desniveladas, filas de gastos fijos mal alineadas, texto de botones partido en tres líneas, ilustración de bienvenida y encabezado en pantallas de 320 px.
+- **Cómo volver al diseño anterior:** quita de `index.html` las líneas de `mejoras.css` y `tema-oscuro.css` (y `theme.js` si no quieres el botón).
+- La tipografía Inter se carga desde Google Fonts; sin conexión se usa la fuente del sistema.
+
+Archivos nuevos: `assets/css/mejoras.css`, `assets/css/tema-oscuro.css`, `assets/js/theme.js`.
+
+# Versión base v9
 
 Proyecto web **mobile-first**, organizado en HTML, CSS y JavaScript. Funciona en GitHub Pages, Android, iPhone y en el navegador de la computadora. Es una maqueta funcional que guarda datos en el navegador **sin cuentas en servidor ni sincronización entre dispositivos**.
 
@@ -41,7 +54,9 @@ saldo-claro/
     │   ├── app.css
     │   ├── coach.css
     │   ├── welcome.css
-    │   └── help.css
+    │   ├── help.css
+    │   ├── mejoras.css
+    │   └── tema-oscuro.css
     ├── icons/
     │   ├── icon.svg
     │   └── apple-touch-icon.png
@@ -56,7 +71,8 @@ saldo-claro/
         ├── help.js
         ├── actions.js
         ├── app.js
-        └── welcome.js
+        ├── welcome.js
+        └── theme.js
 ```
 
 ## Probar en Visual Studio Code
@@ -66,7 +82,7 @@ Abre la carpeta extraída en VS Code y pulsa **Open with Live Server** sobre `in
 ## Reemplazar la versión de GitHub desde la web
 
 1. En la versión que ya utilizas, entra a **Ajustes → Copias de seguridad** (en v7: Ajustes → Tus datos → Exportar) y **guarda una copia** de tus datos antes de actualizar.
-2. Descomprime `SaldoClaro_v9_codigo_completo.zip`.
+2. Descomprime `SaldoClaro_v9.2_codigo_completo.zip`.
 3. Entra a [tu repositorio](https://github.com/rodrirey18/saldo-claro) → **Code → Add file → Upload files**.
 4. Arrastra `index.html`, `README.md` y **toda la carpeta `assets`** (conservando `css/`, `js/` e `icons/`).
 5. Pulsa **Commit changes** en `main`. Después, revisa **Actions** hasta que GitHub Pages termine la publicación.

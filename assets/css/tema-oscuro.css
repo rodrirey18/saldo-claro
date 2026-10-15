@@ -1,0 +1,134 @@
+/* Saldo Claro · modo oscuro (v9.2)
+   Se activa con <html data-theme="dark">. El botón del encabezado lo alterna y
+   la elección se guarda en localStorage ("saldo-claro-theme"). Sin elección,
+   sigue el modo del teléfono. */
+
+/* ── Botón de tema (visible en ambos modos) ───────────────── */
+.theme-trigger{width:36px;height:36px;border-radius:50%;border:1px solid #daeaea;background:#f0f9f8;color:var(--teal);display:grid;place-items:center;padding:0;transition:transform .18s var(--ease),background .2s}
+.theme-trigger:active{transform:scale(.9)}
+.theme-trigger svg{width:18px;height:18px;grid-area:1/1;transition:transform .45s var(--spring),opacity .25s}
+.theme-trigger .i-sun{opacity:0;transform:rotate(-90deg) scale(.4)}
+html[data-theme="dark"] .theme-trigger .i-moon{opacity:0;transform:rotate(90deg) scale(.4)}
+html[data-theme="dark"] .theme-trigger .i-sun{opacity:1;transform:none}
+html.theme-anim *,html.theme-anim *::before,html.theme-anim *::after{transition:background-color .35s ease,color .25s ease,border-color .35s ease,box-shadow .35s ease!important}
+
+/* ═══ Paleta oscura ═══════════════════════════════════════ */
+html[data-theme="dark"]{
+  color-scheme:dark;
+  --navy:#e6eff4; --ink:#e6eff4; --muted:#90a5b6; --line:#223747;
+  --teal:#5dd6cb; --teal-2:#4cc4bf; --aqua:#2caea9;
+  --bg:#0a141c; --surface:#111f2b;
+  --coral:#ff8f82; --expense:#ff8f82; --income:#4fd9b5;
+  --shadow:0 1px 2px rgba(0,0,0,.45),0 12px 30px -14px rgba(0,0,0,.7);
+}
+html[data-theme="dark"] body{background:#0a141c;color:var(--ink)}
+html[data-theme="dark"] input[type=month],html[data-theme="dark"] input[type=date]{color-scheme:dark}
+html[data-theme="dark"] ::placeholder{color:#6d8497}
+html[data-theme="dark"] a{color:var(--teal)}
+html[data-theme="dark"] .app-shell{background:radial-gradient(120% 55% at 50% 0%,#12323a 0%,#0c1b25 42%,#0a141c 100%);box-shadow:0 0 70px rgba(0,0,0,.5)}
+@media(min-width:700px){html[data-theme="dark"] .app-shell{border-color:#1b3040}}
+html[data-theme="dark"] .brandbar{background:rgba(10,20,28,.78)}
+html[data-theme="dark"] .logo span:nth-child(1){background:#1a9099}
+html[data-theme="dark"] .logo span:nth-child(3){background:#0b6f78}
+html[data-theme="dark"] .theme-trigger,html[data-theme="dark"] .help-trigger{background:#142a37;border-color:#24404f;color:var(--teal)}
+html[data-theme="dark"] .icon-button{background:#162d3a;color:var(--teal)}
+
+/* ── Superficies (tarjetas, listas, hojas) ────────────────── */
+html[data-theme="dark"] :is(.panel,.goal-card,.carryover-card,.entry-row,.coach-strategy,.coach-template,.help-item,.pending-fixed,.reconcile-home,.empty-state,.help-search-box,.welcome-card,.tour-bubble,.month-pill,.filter-pill,.quick-button,.discover-grid button,.mini-action,.fixed-figures>div,.forecast-grid>div,.fixed-tip,.modal-sheet){background:#111f2b;border-color:#1f3444;color:var(--ink)}
+html[data-theme="dark"] .tour-bubble::before{background:#111f2b}
+html[data-theme="dark"] .metric{background:#111f2b}
+html[data-theme="dark"] .metric-grid .metric:nth-child(1){background:linear-gradient(160deg,#0f3338 0%,#111f2b 72%)}
+html[data-theme="dark"] .metric-grid .metric:nth-child(2){background:linear-gradient(160deg,#3a2023 0%,#111f2b 72%)}
+html[data-theme="dark"] .metric-grid .metric:nth-child(3){background:linear-gradient(160deg,#10352c 0%,#111f2b 72%)}
+html[data-theme="dark"] .metric-grid .metric:nth-child(4){background:linear-gradient(160deg,#10303f 0%,#111f2b 72%)}
+html[data-theme="dark"] .metric::after{opacity:.16}
+html[data-theme="dark"] .modal-header{background:rgba(17,31,43,.94)}
+html[data-theme="dark"] .modal-overlay{background:rgba(2,10,16,.72)}
+html[data-theme="dark"] .sheet-handle{background:#35505f}
+html[data-theme="dark"] .empty-state{border-color:#2a4455;background:linear-gradient(180deg,#111f2b,#0f1c27)}
+
+/* ── Superficies secundarias ──────────────────────────────── */
+html[data-theme="dark"] :is(.inline-stat,.category-chips span,.reconcile-table,.reconcile-results span,.welcome-choice,.tour-back,.coach-limit-pills button,.coach-switch,.carryover-cells>div,.private-note,.goals-switch,.month-controls .arrow-month:active){background:#162a38;border-color:#233a4a;color:var(--muted)}
+html[data-theme="dark"] .goals-switch button{color:var(--ink)}
+html[data-theme="dark"] .goals-switch button.active{color:#fff}
+html[data-theme="dark"] .carryover-cells>div{color:var(--ink)}
+html[data-theme="dark"] .reconcile-table>div{color:#a9bccb}
+html[data-theme="dark"] .reconcile-table>div+div{border-color:#233a4a}
+html[data-theme="dark"] .pending-row{border-color:#223747}
+html[data-theme="dark"] .progress{background:#1f3342}
+html[data-theme="dark"] .year-row+.year-row,html[data-theme="dark"] .wallet-row+.wallet-row,html[data-theme="dark"] .budget-item+.budget-item{border-color:#223747}
+
+/* ── Formularios ──────────────────────────────────────────── */
+html[data-theme="dark"] :is(.form-group input,.form-group select,.form-group textarea,.search-area input,.welcome-card input:not([type=checkbox])){background:#162a38;border-color:#27404f;color:var(--ink)}
+html[data-theme="dark"] :is(.form-group input,.form-group select,.form-group textarea):focus{border-color:var(--teal-2);box-shadow:0 0 0 4px rgba(76,196,191,.2)}
+html[data-theme="dark"] .month-pill input{color:var(--ink)}
+html[data-theme="dark"] .help-search-box input{color:var(--ink)}
+
+/* ── Zonas teñidas de aqua ────────────────────────────────── */
+html[data-theme="dark"] :is(.intro-note,.discover-panel,.profile-intro,.fixed-home,.forecast-card,.rec-auto,.coach-intro,.coach-entry,.coach-bottom,.help-tour-card,.welcome-note,.demo-settings-note,.carryover-result,.forecast-result,.fixed-net,.welcome-pill,.recover-mark,.recovery-code,.mini-action.fill,.pending-row button,.create-goal,.secondary-btn,.coach-switch.on,.badge-status,.tabbar button.active,.coach-edit){background:#103137;border-color:#1c4a50;color:var(--teal)}
+html[data-theme="dark"] .discover-panel{background:linear-gradient(130deg,#10343a,#111f2b)}
+html[data-theme="dark"] .fixed-net,html[data-theme="dark"] .forecast-result,html[data-theme="dark"] .carryover-result{background:#12403f}
+html[data-theme="dark"] .carryover-result{color:#bfeee8}
+html[data-theme="dark"] .carryover-result strong{color:var(--teal)}
+html[data-theme="dark"] .demo-status{background:#0f3438;border-color:#1c5a5c;color:#c5f0ea}
+html[data-theme="dark"] .recovery-code{color:#d6f2ef;border-color:#2c7d82}
+html[data-theme="dark"] .create-goal{color:#c9f4ef}
+
+/* ── Avisos de color ──────────────────────────────────────── */
+html[data-theme="dark"] .balance-notice{background:#3a2a22;border-color:#5a3d2e;color:#ffbd9e}
+html[data-theme="dark"] .reconcile-warning{background:#3a2f1c;color:#f0c984}
+html[data-theme="dark"] .danger-btn{background:#3a2024;border-color:#5a2f34;color:#ff9a8f}
+html[data-theme="dark"] .welcome-error{background:#3a2024;color:#ff9a8f}
+html[data-theme="dark"] .value-positive{color:#4fd9b5!important}
+html[data-theme="dark"] .value-negative{color:#ff8f82!important}
+html[data-theme="dark"] .entry-row .amount.expense{color:#ff8f82}
+html[data-theme="dark"] .entry-row .amount.income{color:#4fd9b5}
+html[data-theme="dark"] .entry-row .amount.other{color:var(--teal)}
+html[data-theme="dark"] .badge-status.pending{background:#3a3220;color:#f0c984;border-color:transparent}
+
+/* ── Iconos de color ──────────────────────────────────────── */
+html[data-theme="dark"] .icon-tile{background:#12363a;color:#5dd6cb}
+html[data-theme="dark"] .icon-tile.coral{background:#3d2226;color:#ff8f82}
+html[data-theme="dark"] .icon-tile.blue{background:#12303d;color:#6fc6e0}
+html[data-theme="dark"] .icon-tile.navy{background:#1a2a3d;color:#8fb4e0}
+html[data-theme="dark"] .icon-tile.amber{background:#3a2f1a;color:#e6b45a}
+html[data-theme="dark"] .welcome-art{background:linear-gradient(135deg,#12403f,#12304a);color:#5dd6cb}
+html[data-theme="dark"] .coach-summary-name .icon-tile{background:#ffffff29;color:#fff}
+
+/* ── Botones principales (fondo teal + texto blanco) ──────── */
+html[data-theme="dark"] :is(.primary-btn,.quick-button.primary,.floating-add,.filter-pill.active,.goals-switch button.active,.coach-limit-pills button.selected,.help-tour-card button,.welcome-primary,.demo-status button,.pending-row .x),
+html[data-theme="dark"] [style*="background:var(--teal)"]{background:linear-gradient(135deg,#0e8d92,#0a7378);border-color:transparent;color:#fff}
+html[data-theme="dark"] .floating-add{box-shadow:0 14px 28px -10px rgba(0,0,0,.7)}
+html[data-theme="dark"] .quick-button{color:var(--teal)}
+html[data-theme="dark"] .quick-button.primary{color:#fff}
+
+/* ── Barra inferior, avisos, ayuda ────────────────────────── */
+html[data-theme="dark"] .tabbar{background:rgba(13,25,35,.88);border-color:rgba(255,255,255,.07);box-shadow:0 18px 40px -14px rgba(0,0,0,.8)}
+html[data-theme="dark"] .tabbar button{color:#8ea4b5}
+html[data-theme="dark"] .tabbar button.active{color:var(--teal);border:0}
+html[data-theme="dark"] .notice{background:rgba(34,59,77,.96);color:#eaf4f8}
+
+/* ── Textos grises fijos en el CSS original ───────────────── */
+html[data-theme="dark"] :is(.coach-intro span,.coach-bottom span,.help-answer p,.help-tour-card span,.pending-fixed>p,.reconcile-home>p,.recovery-info p,.fixed-home>p,.forecast-card>p,.fixed-figures span,.forecast-grid span,.forecast-result span,.fixed-home small,.carryover-description,.carryover-total,.carryover-line,.carryover-cells span,.fixed-tip,.welcome-note,.tour-bubble p,.welcome-secondary,.welcome-help,.entry-row .date-flag,.profile-intro,.intro-note,.private-note,.demo-settings-note,.carryover-headline){color:#a9bccb}
+html[data-theme="dark"] :is(.carryover-total strong,.carryover-line strong,.reconcile-table strong,.carryover-headline,.fixed-tip strong){color:var(--ink)}
+html[data-theme="dark"] .tour-topline,html[data-theme="dark"] .tour-text-btn,html[data-theme="dark"] .footer-info{color:#7a91a3}
+html[data-theme="dark"] .entry-row .date-flag span{color:var(--muted)}
+html[data-theme="dark"] .coach-eyebrow,html[data-theme="dark"] .tour-label,html[data-theme="dark"] .help-item button small{color:#4fd1c5}
+html[data-theme="dark"] .goal-foot span:first-child{color:#4fd1c5}
+html[data-theme="dark"] .category-chips span{color:#a9c7cf}
+html[data-theme="dark"] .welcome-brand,html[data-theme="dark"] .recovery-info h3,html[data-theme="dark"] .welcome-card h1{color:var(--ink)}
+html[data-theme="dark"] .intro-note strong,html[data-theme="dark"] .help-tour-card strong{color:var(--teal)}
+html[data-theme="dark"] .coach-strategy-foot div strong{color:var(--teal)}
+html[data-theme="dark"] .coach-heading p strong,html[data-theme="dark"] .recovery-check{color:var(--ink)}
+
+/* ── Bienvenida, bloqueo y guía ───────────────────────────── */
+html[data-theme="dark"] .welcome-screen{background:linear-gradient(148deg,#0d2128 0%,#0a141c 62%,#0c1f2b 100%)}
+@media(min-width:700px){html[data-theme="dark"] .welcome-screen{background:linear-gradient(135deg,#0d2128,#0b1823)}}
+html[data-theme="dark"] .welcome-card{box-shadow:0 30px 70px -28px rgba(0,0,0,.8)}
+html[data-theme="dark"] .welcome-art::before,html[data-theme="dark"] .welcome-art::after{background:#5dd6cb;opacity:.35}
+html[data-theme="dark"] .tour-bubble{box-shadow:0 15px 65px rgba(0,0,0,.6)}
+
+/* Tarjetas con degradado propio de la app (saldo, plan) se mantienen: ya son oscuras */
+html[data-theme="dark"] .hero{box-shadow:0 22px 40px -18px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.12)}
+html[data-theme="dark"] .fixed-buttons button{background:#111f2b;border-color:#24505a;color:var(--teal)}
+html[data-theme="dark"] .welcome-art::before,html[data-theme="dark"] .welcome-art::after{display:none}

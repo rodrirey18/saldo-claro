@@ -1,0 +1,190 @@
+/* Saldo Claro · capa de mejoras visuales (v9.1)
+   Se carga al final. Para volver al diseño anterior basta quitar su <link> en index.html. */
+
+:root{
+  --teal:#00505e; --teal-2:#00828a; --aqua:#2caea9;
+  --ink:#0b2036; --muted:#5b6f84;            /* más contraste (antes #71839a) */
+  --expense:#c8453a; --income:#007a70;       /* rojo/verde legibles en texto pequeño */
+  --bg:#f3f7f8; --line:#e6edf0;
+  --shadow:0 1px 2px rgba(11,32,54,.04),0 10px 30px -12px rgba(11,32,54,.14);
+  --ease:cubic-bezier(.22,.8,.24,1);
+  --spring:cubic-bezier(.34,1.4,.64,1);
+}
+body{font-family:Inter,"SF Pro Text",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-feature-settings:"tnum" 1,"cv11" 1;-webkit-tap-highlight-color:transparent}
+.app-shell{background:radial-gradient(120% 60% at 50% 0%,#e9f6f4 0%,#f6fafa 38%,#f3f7f8 100%);padding-bottom:calc(112px + env(safe-area-inset-bottom))}
+
+/* ── Encabezado fijo con desenfoque ───────────────────────── */
+.brandbar{position:sticky;top:0;z-index:20;padding:calc(14px + env(safe-area-inset-top)) 22px 12px;background:rgba(246,250,250,.78);backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px)}
+.wordmark{font-size:18px;letter-spacing:-.6px}
+.icon-button,.help-trigger{transition:transform .18s var(--ease),background .2s}
+.icon-button:active,.help-trigger:active{transform:scale(.92)}
+
+/* ── Banda de modo prueba más compacta ────────────────────── */
+.demo-status{margin:8px 20px 0;padding:8px 8px 8px 12px;border-radius:14px;background:#e3f5f1;border-color:#b8ddd6;font-size:11px}
+.demo-status span{display:block;white-space:normal;font-weight:600;font-size:11px;line-height:1.4;min-width:0}
+.demo-status span svg{display:inline-block;vertical-align:-3px;margin-right:6px;width:15px;height:15px}
+.demo-status strong{font-weight:750}
+.demo-status button{padding:7px 9px;min-height:32px;font-size:10.5px;border-radius:10px}
+
+/* ── Títulos ──────────────────────────────────────────────── */
+.hello{font-size:27px;letter-spacing:-1.1px;font-weight:800}
+.subtitle{font-size:13.5px}
+.page-heading h1{font-size:29px;letter-spacing:-1.2px}
+.section-h h2{font-size:15.5px}
+.page{padding-top:18px;animation:rise .28s var(--ease) both}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ── Selector de mes ──────────────────────────────────────── */
+.month-pill{background:#fff;border-color:#e3ecef;box-shadow:0 1px 2px rgba(11,32,54,.05);transition:box-shadow .2s}
+.month-controls .arrow-month{width:36px;height:36px;border-radius:12px;transition:background .18s,transform .18s var(--ease)}
+.month-controls .arrow-month:active{background:#e4f0f2;transform:scale(.9)}
+
+/* ── Tarjeta principal ────────────────────────────────────── */
+.hero{border-radius:26px;padding:26px 26px 24px;min-height:164px;
+  background:
+    radial-gradient(90% 120% at 100% 0%,rgba(76,214,197,.34) 0%,rgba(76,214,197,0) 55%),
+    linear-gradient(140deg,#003f4d 0%,#005e69 55%,#007a80 100%);
+  box-shadow:0 22px 40px -18px rgba(0,80,94,.55),inset 0 1px 0 rgba(255,255,255,.14)}
+.hero-top{font-size:12.5px;letter-spacing:.2px;color:#cfe9ea;text-transform:uppercase;font-weight:650}
+.hero-val{font-size:clamp(38px,10.5vw,48px);letter-spacing:-2px;font-weight:800;margin:12px 0 8px;text-shadow:0 2px 14px rgba(0,0,0,.14)}
+.hero-sub{color:#b9dcde;font-size:11.5px;line-height:1.45}
+.eye-button{width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.12);transition:background .2s,transform .18s var(--ease)}
+.eye-button:active{transform:scale(.9);background:rgba(255,255,255,.22)}
+
+/* ── Métricas con identidad de color ──────────────────────── */
+.metric-grid{gap:12px;margin-top:14px}
+.metric{border:0;border-radius:20px;min-height:104px;padding:15px 14px;position:relative;overflow:hidden;background:#fff;transition:transform .2s var(--ease),box-shadow .2s}
+.metric::after{content:"";position:absolute;inset:auto -22px -26px auto;width:84px;height:84px;border-radius:50%;opacity:.26;pointer-events:none;background:currentColor;filter:blur(26px)}
+.metric-grid .metric:nth-child(1){background:linear-gradient(160deg,#eaf9f6 0%,#fff 70%);color:#2caea9}
+.metric-grid .metric:nth-child(2){background:linear-gradient(160deg,#fff0ed 0%,#fff 70%);color:#f08a7e}
+.metric-grid .metric:nth-child(3){background:linear-gradient(160deg,#eef8f3 0%,#fff 70%);color:#5cc7a0}
+.metric-grid .metric:nth-child(4){background:linear-gradient(160deg,#e9f3f9 0%,#fff 70%);color:#5aa6c9}
+.metric>*{position:relative;z-index:1}
+.metric-top{font-size:12px;color:var(--ink)}
+.metric .icon-tile{width:36px;height:36px;border-radius:12px}
+.metric .icon-tile svg{width:20px;height:20px}
+.metric-value{color:var(--ink);font-size:clamp(18px,5vw,21px);font-weight:800;margin-top:12px}
+.metric-foot{color:var(--muted);font-size:10.5px;line-height:1.35}
+.value-negative{color:var(--expense)!important}.value-positive{color:var(--income)!important}
+
+/* ── Paneles y listas ─────────────────────────────────────── */
+.panel,.goal-card,.carryover-card{border:0;border-radius:22px;box-shadow:var(--shadow)}
+.entry-row{border:0;border-radius:18px;padding:12px 14px;gap:12px;box-shadow:var(--shadow);transition:transform .18s var(--ease),box-shadow .2s}
+.entry-row:active,.metric:active,.goal-card:active,.quick-button:active,.mini-action:active{transform:scale(.98)}
+.entry-row .date-flag{width:36px;font-size:15px;font-weight:800;color:var(--ink);line-height:1.1}
+.entry-row .date-flag span{font-size:9.5px;letter-spacing:.6px;font-weight:700}
+.entry-row .amount{align-self:center;padding-top:0;font-size:13.5px;font-weight:800}
+.entry-row .amount.expense{color:var(--expense)}.entry-row .amount.income{color:var(--income)}
+.item-note{font-size:11.5px}
+.icon-tile{border-radius:15px}
+.divider-date{font-size:12px;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);font-weight:750;margin:24px 0 10px}
+
+/* ── Filtros, botones, formularios ────────────────────────── */
+.filter-pill{padding:10px 17px;background:#fff;box-shadow:0 1px 2px rgba(11,32,54,.06);transition:background .2s,color .2s,transform .18s var(--ease)}
+.filter-pill:active{transform:scale(.95)}
+.filter-pill.active{background:var(--teal);box-shadow:0 8px 16px -8px rgba(0,80,94,.7)}
+.goals-switch{background:#e7f0f2}
+.goals-switch button{transition:background .22s var(--ease),color .2s,box-shadow .2s}
+.goals-switch button.active{box-shadow:0 4px 12px -4px rgba(0,80,94,.55)}
+.primary-btn,.quick-button.primary,.floating-add{background:linear-gradient(135deg,#00606c,#00505e);border-color:transparent;transition:transform .18s var(--ease),box-shadow .2s,filter .2s}
+.primary-btn:active,.floating-add:active{transform:scale(.97);filter:brightness(.95)}
+.floating-add{box-shadow:0 14px 28px -10px rgba(0,80,94,.7);padding:15px 24px}
+.quick-button,.secondary-btn,.mini-action{transition:transform .18s var(--ease),background .2s}
+.form-group input,.form-group select,.form-group textarea{border-color:#d9e5e8;border-radius:14px;transition:border-color .2s,box-shadow .2s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--teal-2);box-shadow:0 0 0 4px rgba(44,174,169,.18)}
+
+/* ── Barra de progreso animada ────────────────────────────── */
+.progress{height:10px;background:#e2eaee}
+.progress span{background:linear-gradient(90deg,#0a9c9a,#46c3b2);transform-origin:left center;animation:fill .9s var(--ease) both;box-shadow:0 0 12px rgba(44,174,169,.45)}
+@keyframes fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+/* ── Barra inferior flotante con pestaña activa ───────────── */
+.tabbar{width:calc(100% - 24px);max-width:516px;bottom:calc(10px + env(safe-area-inset-bottom));padding:7px;gap:4px;border:1px solid rgba(255,255,255,.7);border-radius:26px;background:rgba(255,255,255,.86);backdrop-filter:saturate(1.6) blur(18px);-webkit-backdrop-filter:saturate(1.6) blur(18px);box-shadow:0 18px 40px -14px rgba(11,32,54,.28),0 2px 6px rgba(11,32,54,.06)}
+.tabbar button{min-height:52px;border-radius:19px;gap:4px;font-size:10.5px;color:#587086;transition:background .25s var(--ease),color .2s,transform .18s var(--ease)}
+.tabbar button svg{transition:transform .3s var(--spring)}
+.tabbar button.active{background:#dff3f0;color:var(--teal)}
+.tabbar button.active svg{transform:translateY(-1px) scale(1.12)}
+.tabbar button:active{transform:scale(.94)}
+.add-fixed{bottom:calc(104px + env(safe-area-inset-bottom))}
+.floating-add{bottom:calc(104px + env(safe-area-inset-bottom))}
+@media(min-width:700px){.tabbar{bottom:30px;border-radius:26px}}
+
+/* ── Hojas modales y avisos con movimiento natural ────────── */
+.modal-overlay{backdrop-filter:blur(3px);animation:fade .22s ease both}
+.modal-sheet{border-radius:28px 28px 0 0;animation:sheet .38s var(--ease) both}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes sheet{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+@media(min-width:700px){.modal-sheet{border-radius:26px}}
+.notice{transition:opacity .25s ease,transform .45s var(--spring);border-radius:16px;background:rgba(11,32,54,.94);backdrop-filter:blur(8px)}
+
+/* ── Contenido que aparece suave ──────────────────────────── */
+.empty-state{border-radius:20px;background:linear-gradient(180deg,#fff,#f8fcfc)}
+.intro-note{border-radius:18px}
+@media(prefers-reduced-motion:reduce){.page,.modal-overlay,.modal-sheet,.progress span{animation:none!important}}
+
+/* Botones pequeños: icono y texto alineados */
+.mini-action{display:flex;align-items:center;justify-content:center;gap:6px;min-height:38px;border-radius:12px}
+
+/* ═══ v9.2 · Correcciones de desajustes detectados en la revisión ═══ */
+
+/* 1. Botones con icono + texto: el icono quedaba ENCIMA del texto */
+.primary-btn,.secondary-btn,.danger-btn,.quick-button,.text-link{display:inline-flex;align-items:center;justify-content:center;gap:7px;text-align:center}
+.btn-full{display:flex;width:100%}
+.coach-back{justify-content:flex-start}
+.text-link{gap:4px}
+
+/* 2. Saldo anterior: las tres celdas con la cifra a la misma altura */
+.carryover-cells>div{display:flex;flex-direction:column;justify-content:space-between;gap:6px}
+.carryover-cells strong{margin-top:0}
+
+/* 3. Gastos fijos: título y montos alineados arriba, con los enlaces a la derecha */
+.budget-item:has(.compact-option){align-items:flex-start}
+.budget-item .compact-option{margin:7px 0 0;justify-content:flex-end;gap:14px}
+.budget-item .compact-option .text-link{padding:4px 0}
+.text-link:disabled{opacity:.55}
+
+/* 4. Botones de formularios: el principal más ancho para no partir el texto en 3 líneas */
+.modal-buttons>*:last-child{flex:1.6}
+.modal-buttons>*{line-height:1.25}
+
+/* 5. Ilustración de bienvenida: los "mordiscos" blancos pasan a ser destellos suaves */
+.welcome-art::before,.welcome-art::after{background:#fff;opacity:.55;filter:blur(.3px)}
+.welcome-art{box-shadow:0 18px 34px -18px rgba(0,98,116,.5),inset 0 1px 0 rgba(255,255,255,.6)}
+
+/* 6. Pequeños ajustes de ritmo */
+.panel>.subtle:first-child,.panel>.info-line:first-child{margin-top:0}
+.panel>.subtle:last-child{margin-bottom:0}
+.setting-group{margin:20px 0}
+.empty-state .icon-tile{margin-bottom:12px}
+.goal-values strong{font-weight:800}
+.hero-top span:first-child{opacity:.95}
+.tour-bubble{border-radius:22px}
+.welcome-card{border:0;box-shadow:0 30px 70px -28px rgba(9,49,67,.28)}
+.welcome-primary{background:linear-gradient(135deg,#00606c,#00505e);transition:transform .18s var(--ease),filter .2s}
+.welcome-primary:active{transform:scale(.98);filter:brightness(.95)}
+
+/* 7. Pantallas muy angostas (320 px) */
+@media(max-width:340px){
+  .hello{font-size:24px}.page-heading h1{font-size:26px}
+  .metric-value{font-size:16px}.hero-val{letter-spacing:-1.4px}
+  .tabbar button{font-size:9.5px}
+  .demo-status{margin-inline:12px}
+}
+
+/* 8. Encabezado con tres botones: el nombre nunca se parte en dos líneas */
+.wordmark{white-space:nowrap}
+.brand-tools{gap:7px}
+.inline-stat{background:#fff;box-shadow:var(--shadow)}
+@media(max-width:360px){
+  .brandbar{padding-left:16px;padding-right:16px}
+  .wordmark{font-size:16.5px;gap:8px}
+  .logo{width:26px;height:26px;transform:scale(.88);transform-origin:left center;margin-right:-3px}
+  .brand-tools{gap:5px}
+  .profile-trigger,.icon-button.profile-trigger{width:36px;height:36px}
+  .help-trigger{min-width:38px;height:34px;padding:0 8px}
+}
+@media(max-width:340px){
+  .form-grid{grid-template-columns:1fr}
+  .quick-button{font-size:11px;padding:10px 6px;gap:5px}
+  .quick-row{gap:8px}
+}
