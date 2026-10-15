@@ -56,3 +56,10 @@
 html.tour-frozen,html.tour-frozen body{overscroll-behavior:none}
 body.tour-active .app-shell{touch-action:none}
 .tour-layer{touch-action:none}
+
+/* v8 — la segunda pantalla de bienvenida se puede omitir. */
+.welcome-money-art{height:75px;width:75px;border-radius:25px;margin-bottom:12px}
+.welcome-note{display:flex;align-items:flex-start;gap:7px;background:#eef8f6;color:#396b72;font-size:11.5px;line-height:1.5;padding:10px 12px;border-radius:12px;margin:2px 0 11px}
+.welcome-note svg{flex-shrink:0;margin-top:2px}
+.welcome-back{padding:6px 10px 2px}
+@media(max-height:720px){.welcome-screen{align-items:flex-start}.welcome-card{padding-top:17px;padding-bottom:17px}.welcome-card input:not([type=checkbox]){min-height:43px;margin-bottom:10px}.welcome-card .welcome-intro{margin-bottom:12px}}

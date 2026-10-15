@@ -31,39 +31,73 @@ function showError(screen, message){const el=screen.querySelector('.welcome-erro
 function toggleShell(show){document.getElementById('app-shell').hidden=!show;}
 function logoMark(){return '<span class="logo" aria-hidden="true"><span></span><span></span><span></span></span>';}
 
-function openWelcome(){
-  finishTour();
-  toggleShell(false);
-  lockScreen.hidden=true;
-  welcomeScreen.hidden=false;
-  welcomeScreen.innerHTML=`<div class="welcome-shell">
-    <div class="welcome-brand">${logoMark()} Saldo Claro</div>
-    <div class="welcome-card">
-      <div class="welcome-art">${ico('wallet',66)}</div><span class="welcome-pill">TU PRIMER DÍA</span>
-      <h1>Organiza tu dinero a tu manera</h1>
-      <p class="welcome-intro">Registra tus ingresos, controla tus gastos y ahorra para tus metas. Personaliza tu espacio para comenzar.</p>
-      <form id="welcome-form">
-        <label for="welcome-name">¿Cómo quieres que te llamemos? (opcional)</label>
-        <input id="welcome-name" name="name" autocomplete="nickname" maxlength="55" placeholder="Ejemplo: Alex">
-        <p class="field-hint">Tu información se guarda solo en este navegador. No necesitas contraseña para probar la app.</p>
-        <p class="welcome-error" role="alert" hidden></p>
-        <button type="submit" class="welcome-primary">Comenzar y ver la guía →</button>
-      </form>
-      <button type="button" class="welcome-secondary" id="welcome-skip">Entrar sin escribir mi nombre</button>
-    </div>
-    <p class="welcome-help">Maqueta sin cuentas en línea. Evita guardar información sensible en navegadores compartidos.</p>
-  </div>`;
-  welcomeScreen.querySelector('#welcome-form').addEventListener('submit',ev=>{ev.preventDefault();completeWelcome(welcomeScreen.querySelector('#welcome-name').value.trim());});
-  welcomeScreen.querySelector('#welcome-skip').addEventListener('click',()=>completeWelcome(''));
+let pendingWelcomeName='';
+function welcomeShell(card){
+ toggleShell(false);
+ lockScreen.hidden=true;
+ welcomeScreen.hidden=false;
+ welcomeScreen.innerHTML=`<div class="welcome-shell"><div class="welcome-brand">${logoMark()} Saldo Claro</div>
+ <div class="welcome-card">${card}</div>
+ <p class="welcome-help">Tus datos permanecen en este navegador. No hay cuentas en línea.</p></div>`;
 }
-function completeWelcome(name){
-  db.profile.name=name;
-  if(!save())return showError(welcomeScreen,'No se pudieron guardar los datos.');
-  security.finishOnboarding();
-  welcomeScreen.hidden=true;
-  toggleShell(true);
-  page='home';render();window.scrollTo(0,0);
-  setTimeout(startTour,180);
+function openWelcome(){
+ finishTour();
+ pendingWelcomeName='';
+ welcomeShell(`<div class="welcome-art">${ico('wallet',66)}</div><span class="welcome-pill">PASO 1 DE 2</span>
+ <h1>Tu dinero, a tu manera</h1>
+ <p class="welcome-intro">Comencemos por conocerte. Puedes escribir un nombre o apodo, sin crear una cuenta.</p>
+ <form id="welcome-form"><label for="welcome-name">¿Cómo quieres que te llamemos? (opcional)</label>
+ <input id="welcome-name" name="name" autocomplete="nickname" maxlength="55" placeholder="Ejemplo: Alex">
+ <button type="submit" class="welcome-primary">Siguiente →</button></form>
+ <button type="button" class="welcome-secondary" id="welcome-skip">Continuar sin nombre</button>`);
+ welcomeScreen.querySelector('#welcome-form').addEventListener('submit',ev=>{
+  ev.preventDefault();openWelcomeBalances(welcomeScreen.querySelector('#welcome-name').value.trim());
+ });
+ welcomeScreen.querySelector('#welcome-skip').addEventListener('click',()=>openWelcomeBalances(''));
+}
+function openWelcomeBalances(name){
+ pendingWelcomeName=name;
+ welcomeShell(`<div class="welcome-art welcome-money-art">${ico('coins',58)}</div>
+ <span class="welcome-pill">PASO 2 DE 2 · OPCIONAL</span>
+ <h1>¿Con cuánto dinero empiezas?</h1>
+ <p class="welcome-intro">Anota el dinero que tienes ahora, no tu sueldo futuro. Así tus saldos comenzarán correctamente.</p>
+ <form id="welcome-balances-form">
+  <label for="welcome-digital">Dinero digital · Yape, Plin o banco</label>
+  <input id="welcome-digital" name="digital" type="number" inputmode="decimal" min="0" max="999999999999" step="0.01" placeholder="0.00">
+  <label for="welcome-cash">Dinero en efectivo</label>
+  <input id="welcome-cash" name="cash" type="number" inputmode="decimal" min="0" max="999999999999" step="0.01" placeholder="0.00">
+  <label for="welcome-savings">Ahorros que ya tenías (opcional)</label>
+  <input id="welcome-savings" name="savings" type="number" inputmode="decimal" min="0" max="999999999999" step="0.01" placeholder="0.00">
+  <div class="welcome-note">${ico('info',17)} No es un ingreso nuevo. Tus ahorros se mostrarán separados del dinero disponible.</div>
+  <p class="welcome-error" role="alert" hidden></p>
+  <button type="submit" class="welcome-primary">Guardar y comenzar →</button>
+ </form>
+ <button type="button" class="welcome-secondary" id="welcome-later">Lo haré más tarde</button>
+ <button type="button" class="welcome-secondary welcome-back" id="welcome-back">← Volver al nombre</button>`);
+ const form=welcomeScreen.querySelector('#welcome-balances-form');
+ form.addEventListener('submit',ev=>{
+  ev.preventDefault();
+  const numbers=['digital','cash','savings'].map(key=>{
+   const value=form.elements[key].value.trim();return value===''?0:Number(value);
+  });
+  if(numbers.some(n=>!Number.isFinite(n)||n<0||n>999999999999))return showError(welcomeScreen,'Escribe importes válidos y no negativos.');
+  completeWelcome(pendingWelcomeName,{digital:round(numbers[0]),cash:round(numbers[1]),savings:round(numbers[2])});
+ });
+ welcomeScreen.querySelector('#welcome-later').addEventListener('click',()=>completeWelcome(pendingWelcomeName));
+ welcomeScreen.querySelector('#welcome-back').addEventListener('click',()=>{
+  const prev=pendingWelcomeName;openWelcome();welcomeScreen.querySelector('#welcome-name').value=prev;
+ });
+}
+function completeWelcome(name,opening=null){
+ db.profile.name=name;
+ if(opening)db.opening={...db.opening,...opening};
+ db.openingMonth=thisMonth();
+ if(!save())return showError(welcomeScreen,'No se pudieron guardar los datos.');
+ security.finishOnboarding();
+ welcomeScreen.hidden=true;
+ toggleShell(true);
+ page='home';month=thisMonth();render();window.scrollTo(0,0);
+ setTimeout(startTour,180);
 }
 
 function showLock(){

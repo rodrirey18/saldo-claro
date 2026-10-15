@@ -14,7 +14,7 @@ const monthLabel=m=>new Date(Number(m.slice(0,4)),Number(m.slice(5,7))-1,1).toLo
 const caps=s=>s.charAt(0).toUpperCase()+s.slice(1);
 const nameOf=a=>({digital:'Digital',cash:'Efectivo',savings:'Ahorros'})[a]||'Cuenta';
 const typeName=t=>({income:'Ingreso',expense:'Gasto',save:'Aporte a ahorro',withdraw:'Retiro de ahorro',transfer:'Transferencia',adjustment:'Diferencia por identificar'})[t]||'Movimiento';
-const blank=()=>({schema:2,profile:{name:'',currency:'PEN'},opening:{digital:0,cash:0,savings:0},categories:structuredClone(CATS),transactions:[],goals:[],budgets:{},recurring:[],strategies:[],skippedRecurring:[],demo:false});
+const blank=()=>({schema:2,profile:{name:'',currency:'PEN'},opening:{digital:0,cash:0,savings:0},openingMonth:null,categories:structuredClone(CATS),transactions:[],goals:[],budgets:{},recurring:[],strategies:[],skippedRecurring:[],demo:false});
 function load(){if(security.hasVault())return blank();try{const a=JSON.parse(localStorage.getItem(KEY));if(a?.schema!==2||!Array.isArray(a.transactions)||!Array.isArray(a.goals))return blank();const b=blank();return {...b,...a,profile:{...b.profile,...a.profile},opening:{...b.opening,...a.opening},categories:{...b.categories,...a.categories}}}catch{return blank()}}
 let db=load();let coachGoalId='';let coachSmallLimit=20;let page='home';let goalTab='goals';let month=thisMonth();let filter='all';let searchOpen=false;let searchText='';let showBalance=true;let focusReturn=null;
 const $=id=>document.getElementById(id);
@@ -23,6 +23,29 @@ function money(n){try{return new Intl.NumberFormat('es-PE',{style:'currency',cur
 function maybeMoney(n){return showBalance?money(n):'••••••'}
 function changed(t,w){const a=amt(t.amount);switch(t.type){case'income':return t.to===w?a:0;case'expense':return t.from===w?-a:0;case'save':return w==='savings'?a:t.from===w?-a:0;case'withdraw':return w==='savings'?-a:t.to===w?a:0;case'transfer':return (t.to===w?a:0)-(t.from===w?a:0);case'adjustment':return t.account===w?(t.direction==='increase'?a:-a):0;default:return 0}}
 function balances(m=month){const b={...db.opening};const end=m+'-31';for(const t of db.transactions){if(t.date>end)continue;for(const k of ['digital','cash','savings'])b[k]=round(amt(b[k])+changed(t,k))}return b}
+/** Saldo de apertura del mes seleccionado. Incluye la base inicial y los
+ * movimientos hasta el último día del mes anterior, NO los del mes actual.
+ * Transferencias y aportes no se vuelven ingresos al cambiar de mes.
+ */
+function balancesAtMonthStart(m=month){
+ const result={digital:round(amt(db.opening.digital)),cash:round(amt(db.opening.cash)),savings:round(amt(db.opening.savings))};
+ const cutoff=`${m}-01`;
+ for(const t of db.transactions){
+  if(!t.date||t.date>=cutoff)continue;
+  for(const k of ['digital','cash','savings'])result[k]=round(result[k]+changed(t,k));
+ }
+ return result;
+}
+function monthSummary(m=month){
+ const start=balancesAtMonthStart(m),end=balances(m);
+ const started=round(start.digital+start.cash);
+ const finished=round(end.digital+end.cash);
+ const delta=round(finished-started);
+ const movementsThisMonth=movements(m);
+ const classified=monthly(m);
+ const unidentified=round(movementsThisMonth.filter(t=>t.type==='adjustment').reduce((s,t)=>s+(t.direction==='increase'?amt(t.amount):-amt(t.amount)),0));
+ return {start,end,started,finished,delta,income:classified.income,expense:classified.expense,saved:classified.saved,unidentified};
+}
 function movements(m=month){return db.transactions.filter(t=>t.date?.slice(0,7)===m)}
 function monthly(m=month){let income=0,expense=0,saved=0;for(const t of movements(m)){if(t.type==='income')income+=amt(t.amount);if(t.type==='expense')expense+=amt(t.amount);if(t.type==='save')saved+=amt(t.amount);if(t.type==='withdraw')saved-=amt(t.amount)}const discrepancy=round(movements(m).filter(t=>t.type==='adjustment').reduce((sum,t)=>sum+amt(t.amount),0));return {income:round(income),expense:round(expense),saved:round(saved),discrepancy}}
 function goalAmount(id){return round(db.transactions.reduce((total,t)=>t.goalId===id?total+(t.type==='save'?amt(t.amount):t.type==='withdraw'?-amt(t.amount):0):total,0))}

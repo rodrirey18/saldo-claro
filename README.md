@@ -1,16 +1,27 @@
-# Saldo Claro v7 — Proyecto para VS Code y GitHub Pages
+# Saldo Claro v8 — App de finanzas personales
 
-Prototipo web para celular hecho con HTML, CSS y JavaScript, sin servicios externos ni instalaciones de paquetes. No tiene una cuenta en servidor; los registros se guardan en el navegador del dispositivo. **No es una conexión bancaria ni un servicio de almacenamiento seguro para terceros.**
+Proyecto web **mobile-first**, organizado en HTML, CSS y JavaScript. Funciona en GitHub Pages, Android, iPhone y en el navegador de la computadora. Es una maqueta funcional que guarda datos en el navegador **sin cuentas en servidor ni sincronización entre dispositivos**.
 
-## Novedades de v7
+## Mejoras de v8
 
-- **Sueldo fijo previsto vs. ingreso real:** el resumen de ingresos sigue mostrando solo cobros registrados. Los sueldos por confirmar aparecen ahora en Inicio con **«Ya lo recibí»**, que abre el formulario de registro real. Se conserva el cálculo mensual programado de v6.
-- **¿Cuánto dinero tengo?:** «Comprobar mi dinero» permite escribir el dinero digital y efectivo que hay realmente. Si todavía no hay movimientos, guarda saldos iniciales. Si ya los hay, calcula y registra una **diferencia por identificar**, sin atribuirla a gastos o ingresos conocidos. Queda en Movimientos y se puede eliminar para sustituirla por la operación real si se descubre su causa.
-- **Centro de ayuda y buscador:** signo `?` arriba a la derecha. Permite escribir `sueldo`, `gastos hormiga`, `Yape`, `dólares`, `saldo negativo`, etc. Muestra preguntas y funciones relacionadas, con acceso a la pantalla correspondiente. La guía tipo cómic continúa disponible allí; no se cambió su apariencia.
-- **Menos duplicaciones:** quitados los accesos repetidos al tutorial en Ajustes y en Inicio. Ayuda detallada y buscador tienen un solo lugar. Se mantienen los accesos directos útiles para registrar gastos, ingresos y mover dinero.
-- **Reconfigurar sueldo:** una regla de sueldo creada con el formulario **Mi sueldo fijo** se sustituye en una edición posterior del mismo formulario, en lugar de generar repetidos. Las reglas creadas en versiones antiguas sin ese identificador deben revisarse desde Plan mensual si estaban duplicadas.
+1. **Bienvenida en dos pasos:** primero el nombre o apodo (opcional); después digital, efectivo y ahorros iniciales (también opcionales). Puedes tocar **«Lo haré más tarde»**. El segundo paso es el dinero que **ya tienes**, no el sueldo futuro.
+2. **Saldo arrastrado entre meses:** en Inicio se muestran el saldo digital, efectivo y ahorros al *comenzar* el mes seleccionado, el total disponible al empezar y cómo cambió con ingresos cobrados, gastos, ahorros y diferencias sin identificar. El dinero sobrante **permanece disponible**, sin contarlo de nuevo como ingreso del mes siguiente.
+3. **Nombres más claros para los respaldos:** en Ajustes, «Exportar» pasa a **Guardar copia** e «Importar» pasa a **Recuperar copia**. Se mantiene el formato JSON y las mismas acciones.
+4. **Centro de ayuda actualizado:** añade explicaciones sobre saldos iniciales opcionales y dinero sobrante de meses anteriores. Se abre desde el `?` del encabezado.
 
-## Organización
+## Importante: saldos reales y previstos
+
+- **Saldo disponible:** dinero digital + efectivo actual calculado; no incluye ahorros separados.
+- **Saldo anterior:** dinero que tenías al empezar el mes, desglosado por bolsillo. No crea movimientos ni ingresos duplicados.
+- **Ingresos del mes:** dinero cobrado y registrado, no el sueldo que todavía esperas.
+- **Gastos del mes:** gastos registrados. Una transferencia digital ↔ efectivo no es gasto ni ingreso.
+- **Ahorros:** separados de lo disponible. Aportar ahorros no es un gasto.
+- **Cálculo mensual previsto:** sueldo fijo programado menos gastos fijos configurados. No implica que los cobros o pagos ocurrieron de verdad; las anotaciones automáticas solo son registros basados en fechas programadas.
+- **Dinero que no cuadra:** «Comprobar mi dinero» puede registrar una diferencia sin identificar. No se inventa su categoría.
+
+Para los usuarios que ya tienen información desde v7, **no vuelve a aparecer la bienvenida**. Se conservan sus registros en el mismo navegador. Los datos antiguos sin fecha de inicio explícita muestran «Dinero acumulado al iniciar el mes» por claridad.
+
+## Estructura
 
 ```text
 saldo-claro/
@@ -21,49 +32,41 @@ saldo-claro/
     │   ├── app.css
     │   ├── coach.css
     │   ├── welcome.css
-    │   └── help.css             # NUEVO
+    │   └── help.css
     ├── icons/
     │   ├── icon.svg
     │   └── apple-touch-icon.png
     └── js/
         ├── icons.js
-        ├── security.js          # compatibilidad con datos v5
+        ├── security.js
         ├── data.js
         ├── recurring.js
         ├── views.js
         ├── coach.js
-        ├── help.js              # NUEVO
-        ├── reconcile.js         # NUEVO
+        ├── reconcile.js
+        ├── help.js
         ├── actions.js
         ├── app.js
         └── welcome.js
 ```
 
-## Probarlo en Visual Studio Code
+## Probar en Visual Studio Code
 
-1. Extrae el ZIP y abre la carpeta en VS Code.
-2. Instala **Live Server** si no lo tienes.
-3. Haz clic derecho en `index.html` y selecciona **Open with Live Server**.
-4. En el celular, después de publicarlo en GitHub Pages, prueba la bienvenida, confirma un sueldo programado, haz una comprobación de saldos y busca una respuesta en `?`.
+Abre la carpeta extraída en VS Code y pulsa **Open with Live Server** sobre `index.html`. No requiere instalar dependencias. Puedes probar el tutorial en la sección de ayuda del encabezado.
 
-## Actualizar la misma web desde GitHub (sin subir con VS Code)
+## Reemplazar la versión de GitHub desde la web
 
-1. Antes de actualizar, en la versión actual entra en **Ajustes → Tus datos → Exportar** y guarda un respaldo de tus datos reales si existen.
-2. Abre **https://github.com/rodrirey18/saldo-claro**, pestaña **Code**.
-3. Pulsa **Add file → Upload files**.
-4. Arrastra **`index.html`**, **`README.md`** y **toda la carpeta `assets`** de la v7; conserva las subcarpetas. Esta versión añade `help.css`, `help.js` y `reconcile.js`, así que no basta con reemplazar el HTML.
-5. Confirma **Commit changes** sobre la rama `main`.
-6. En **Actions**, espera a que termine la publicación de Pages. Abre **https://rodrirey18.github.io/saldo-claro/** y actualiza la pestaña. Si conserva una copia vieja, recarga ignorando caché.
+1. En la versión que ya utilizas, entra a **Ajustes → Copias de seguridad** (en v7: Ajustes → Tus datos → Exportar) y **guarda una copia** de tus datos antes de actualizar.
+2. Descomprime `SaldoClaro_v8_codigo_completo.zip`.
+3. Entra a [tu repositorio](https://github.com/rodrirey18/saldo-claro) → **Code → Add file → Upload files**.
+4. Arrastra `index.html`, `README.md` y **toda la carpeta `assets`** (conservando `css/`, `js/` e `icons/`).
+5. Pulsa **Commit changes** en `main`. Después, revisa **Actions** hasta que GitHub Pages termine la publicación.
+6. Abre <https://rodrirey18.github.io/saldo-claro/> y recarga la página. Si continúa una versión antigua, prueba actualizar sin caché.
 
-El repositorio debe seguir siendo **público** para usar GitHub Pages con GitHub Free. El código público NO significa que los registros guardados en el navegador se suban a GitHub: no se envían por defecto. No publiques archivos JSON con finanzas personales.
+La app no se actualizará en GitHub al guardar cambios en VS Code: la publicación requiere subir los archivos y confirmarlos en el repositorio.
 
-## Importante sobre balances
+## Privacidad y respaldo
 
-- **Previsto** = cálculo de ingresos y cargos configurados para el mes.
-- **Ingreso real** = movimiento de dinero recibido registrado por el usuario, manualmente o por anotación automática en la fecha prevista. Una anotación automática **no comprueba** que el dinero haya llegado al banco.
-- **Diferencia por identificar** = dinero faltante o sobrante comparado con lo contado; **no podemos saber en qué gastó la persona** sin más información. Se excluye de las categorías y de los totales de ingresos/gastos clasificados. Si se descubre la operación correcta, hay que **eliminar la diferencia correspondiente** y registrar el ingreso/gasto/transferencia real para no contar dos veces.
-- Los saldos iniciales son anteriores a los movimientos. Cambiarlos después altera toda la historia, así que conviene usar **Comprobar mi dinero** para ajustar discrepancias posteriores.
+El archivo JSON contiene datos financieros sin cifrar. No lo publiques en GitHub ni lo compartas por WhatsApp. Guárdalo de forma privada. Los datos no se sincronizan entre celulares; la copia permite transferirlos manualmente. GitHub Pages **publica el código**, no los registros guardados en el `localStorage` de cada navegador.
 
-## Seguridad y sincronización
-
-Cada navegador almacena sus datos con `localStorage`. No hay contraseña en v7 ni cuentas remotas, sincronización, respaldo automático ni validación bancaria. Los datos pueden desaparecer si borras los datos del navegador. Exporta respaldos privados periódicamente. La versión no implementa pagos en moneda extranjera por movimiento.
+> La app no se conecta a bancos y no verifica cobros; la exactitud de los saldos depende de lo que registre cada persona.
